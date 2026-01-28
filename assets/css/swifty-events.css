@@ -23,32 +23,37 @@
 }
 
 /* Layout Utilities */
+/* Layout Utilities */
 .swifty-layout-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
-}
-
-.swifty-layout-list {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
-
-.swifty-layout-list .swifty-event-item {
     width: 100%;
 }
-/* Adjust skins for list view if needed (e.g., side-by-side image/content) implies a completely different internal structure, 
-   but for now we stack the cards vertically as requested. */
 
 .swifty-layout-flex {
     display: flex;
-    flex-wrap: wrap;
     gap: 30px;
+    width: 100%;
 }
 
-.swifty-layout-flex .swifty-event-item {
+.swifty-flex-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.swifty-flex-column {
+    flex-direction: column;
+}
+
+.swifty-flex-row .swifty-event-item {
     flex: 1 1 300px;
+    max-width: 100%;
+    min-width: 0; /* Fix flex overflow issues */
+}
+
+.swifty-flex-column .swifty-event-item {
+    width: 100%;
 }
 
 /* Mobile Responsiveness */
@@ -58,12 +63,18 @@
     }
     
     .swifty-layout-flex {
-        flex-direction: column;
+        flex-direction: column !important;
     }
     
-    .swifty-layout-flex .swifty-event-item {
-        flex: 1 1 100%;
-        max-width: 100%;
+    .swifty-layout-flex.swifty-flex-row {
+         flex-direction: column !important;
+    }
+    
+    .swifty-layout-flex .swifty-event-item,
+    .swifty-flex-row .swifty-event-item {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 
@@ -197,78 +208,107 @@
 /* ===========================
    Skin: Glass Minimal
    =========================== */
+/* ===========================
+   Skin: Glass Minimal (Refined)
+   =========================== */
 .swifty-skin-glass .swifty-event-item {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: var(--radius);
     padding: 24px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
 }
 
 .swifty-skin-glass .swifty-event-item:hover {
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-    border-color: var(--color-primary-start);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 12px 40px rgba(114, 190, 68, 0.1); /* Green shadow */
+    border-color: #fff;
+    transform: translateY(-3px);
 }
 
 .swifty-skin-glass .swifty-date-box {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 60px;
-    color: var(--color-primary-start);
+    justify-content: center;
+    min-width: 70px;
+    height: 70px;
+    background: var(--color-gradient-green);
+    border-radius: 12px;
+    color: #fff;
     font-family: var(--font-heading);
+    box-shadow: 0 4px 10px rgba(114, 190, 68, 0.3);
 }
 
-.swifty-skin-glass .swifty-day { font-size: 1.8rem; font-weight: 800; line-height: 1; }
-.swifty-skin-glass .swifty-month { font-size: 0.8rem; text-transform: uppercase; font-weight: 700; }
+.swifty-skin-glass .swifty-day { 
+    font-size: 1.6rem; 
+    font-weight: 800; 
+    line-height: 1; 
+}
+.swifty-skin-glass .swifty-month { 
+    font-size: 0.75rem; 
+    text-transform: uppercase; 
+    font-weight: 700; 
+    letter-spacing: 1px;
+}
 
-.swifty-skin-glass .swifty-content { flex-grow: 1; }
+.swifty-skin-glass .swifty-content { 
+    flex-grow: 1; 
+    border-left: 1px solid rgba(0,0,0,0.05);
+    padding-left: 24px;
+}
 
 .swifty-skin-glass .swifty-event-title {
-    margin: 0;
-    font-size: 1.2rem;
+    margin: 0 0 8px;
+    font-size: 1.25rem;
     font-weight: 700;
+    color: var(--color-deep-blue);
 }
 
 .swifty-skin-glass .swifty-read-more {
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     color: var(--color-primary-start);
     text-transform: uppercase;
     text-decoration: none;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s;
 }
 
-/* ===========================
-   Skin: Neon Tech
-   =========================== */
+.swifty-skin-glass .swifty-read-more:hover {
+    border-color: var(--color-primary-start);
+}
+
 /* ===========================
    Skin: Gradient Glass (New Colorful Option)
    =========================== */
 .swifty-skin-gradient_glass .swifty-event-item {
-    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,249,255,0.9) 100%);
-    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,249,255,0.9) 100%);
+    border-radius: 24px; /* More rounded */
     padding: 0;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
     transition: all 0.4s ease;
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.8);
     display: flex;
     flex-direction: column;
 }
 
 .swifty-skin-gradient_glass .swifty-event-item:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(114, 190, 68, 0.2);
+    box-shadow: 0 20px 40px rgba(114, 190, 68, 0.15); /* Green glow */
     border-color: var(--color-primary-start);
 }
 
 .swifty-skin-gradient_glass .swifty-event-thumbnail {
-    height: 200px;
+    height: 220px;
     position: relative;
     overflow: hidden;
 }
@@ -277,17 +317,17 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .swifty-skin-gradient_glass .swifty-event-item:hover .swifty-event-thumbnail img {
-    transform: scale(1.08);
+    transform: scale(1.1);
 }
 
 .swifty-skin-gradient_glass .swifty-event-content {
-    padding: 25px;
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(10px);
+    padding: 30px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(15px);
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -295,44 +335,52 @@
 
 .swifty-skin-gradient_glass .swifty-event-date {
     color: #fff;
-    background: linear-gradient(90deg, #36D1DC 0%, #5B86E5 100%); /* Blue gradient */
-    padding: 5px 15px;
-    border-radius: 15px;
+    background: var(--color-gradient-green); /* Using theme green */
+    padding: 6px 16px;
+    border-radius: 50px;
     font-size: 0.8rem;
     font-weight: 700;
     align-self: flex-start;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 10px rgba(91, 134, 229, 0.3);
+    margin-bottom: 16px;
+    box-shadow: 0 4px 10px rgba(114, 190, 68, 0.3);
 }
 
 .swifty-skin-gradient_glass .swifty-event-title a {
-    background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%); /* Green gradient text */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--color-deep-blue);
     font-size: 1.5rem;
     font-weight: 800;
     text-decoration: none;
+    transition: color 0.2s;
+    line-height: 1.3;
+}
+
+.swifty-skin-gradient_glass .swifty-event-title a:hover {
+    color: var(--color-primary-start);
 }
 
 .swifty-skin-gradient_glass .swifty-event-excerpt {
-    color: #555;
-    margin-top: 10px;
+    color: #666;
+    margin-top: 12px;
+    line-height: 1.6;
 }
 
 .swifty-skin-gradient_glass .swifty-btn-details {
     margin-top: auto;
-    background: linear-gradient(90deg, #fc466b 0%, #3f5efb 100%); /* Vibrant purple/pink */
+    background: var(--color-deep-blue); /* Theme Blue */
     color: #fff;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border-radius: 50px;
     text-align: center;
     text-decoration: none;
     font-weight: 600;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
 }
 
 .swifty-skin-gradient_glass .swifty-btn-details:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(63, 94, 251, 0.4);
+    background: transparent;
+    color: var(--color-deep-blue);
+    border-color: var(--color-deep-blue);
+    transform: scale(1.02);
 }
 

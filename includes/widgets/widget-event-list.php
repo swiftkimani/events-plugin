@@ -71,9 +71,24 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				'type' => \Elementor\Controls_Manager::SELECT,
 				'default' => 'grid',
 				'options' => array(
-					'grid' => __( 'Grid (Rows)', 'swifty-events' ),
-					'list' => __( 'List (Column)', 'swifty-events' ),
-					'flex' => __( 'Flexbox (Flow)', 'swifty-events' ),
+					'grid' => __( 'Grid', 'swifty-events' ),
+					'flex' => __( 'Flexbox', 'swifty-events' ),
+				),
+			)
+		);
+
+		$this->add_control(
+			'flex_direction',
+			array(
+				'label' => __( 'Flex Direction', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'default' => 'row',
+				'options' => array(
+					'row' => __( 'Row (Horizontal)', 'swifty-events' ),
+					'column' => __( 'Column (Vertical)', 'swifty-events' ),
+				),
+				'condition' => array(
+					'layout_mode' => 'flex',
 				),
 			)
 		);
@@ -179,7 +194,12 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				$anim_class = 'swifty-anim-zoom-in';
 			}
 
-			echo '<div class="swifty-event-list swifty-layout-' . esc_attr( $settings['layout_mode'] ) . ' swifty-skin-' . esc_attr( $settings['skin'] ) . '">';
+			$layout_class = 'swifty-layout-' . esc_attr( $settings['layout_mode'] );
+			if ( 'flex' === $settings['layout_mode'] ) {
+				$layout_class .= ' swifty-flex-' . esc_attr( $settings['flex_direction'] );
+			}
+
+			echo '<div class="swifty-event-list ' . $layout_class . ' swifty-skin-' . esc_attr( $settings['skin'] ) . '">';
 			
 			$delay = 0;
 			while ( $query->have_posts() ) {
