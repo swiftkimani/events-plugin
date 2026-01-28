@@ -1,136 +1,270 @@
-/* Swifty Events - Green Hydrogen Theme */
+/* Gh2Kenya Theme Integration */
 :root {
-    --swifty-hydrogen-green: #39ff14; /* Neon Green */
-    --swifty-hydrogen-dark: #0a0a0a;   /* Deep Dark */
-    --swifty-hydrogen-glass: rgba(255, 255, 255, 0.05);
-    --swifty-hydrogen-border: rgba(57, 255, 20, 0.3);
-    --swifty-font-family: 'Inter', sans-serif;
+    --color-primary-start: #72BE44;
+    --color-primary-end: #8BDF58;
+    --color-gradient-green: linear-gradient(93deg, var(--color-primary-start) 1.29%, var(--color-primary-end) 96.22%);
+    --color-deep-blue: #0E1B2D;
+    --color-text-dark: #0E1B2D;
+    --color-text-light: #FFFFFF;
+    --color-bg-light: #FFFFFF;
+    --font-heading: 'Geologica', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+    --container-width: 1200px;
+    --radius: 16px;
 }
 
 .swifty-event-list {
+    box-sizing: border-box;
+    font-family: var(--font-body);
+}
+
+.swifty-event-list * {
+    box-sizing: border-box;
+}
+
+/* Layout Utilities */
+.swifty-layout-grid {
     display: grid;
-    gap: 20px;
-    font-family: var(--swifty-font-family);
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
 }
 
-/* Card Skin */
-.swifty-skin-card {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+.swifty-layout-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
 }
 
-.swifty-skin-card .swifty-event-item {
-    background: var(--swifty-hydrogen-dark);
-    border: 1px solid var(--swifty-hydrogen-border);
-    border-radius: 12px;
-    padding: 20px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    color: #fff;
+.swifty-layout-flex .swifty-event-item {
+    flex: 1 1 300px;
+}
+
+/* Animation Classes */
+.swifty-anim-fade-up {
+    animation: swiftyFadeUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.swifty-anim-zoom-in {
+    animation: swiftyZoomIn 0.5s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+@keyframes swiftyFadeUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes swiftyZoomIn {
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ===========================
+   Skin: Gh2Kenya Card (Premium)
+   =========================== */
+.swifty-skin-gh2kenya .swifty-event-item {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.swifty-skin-gh2kenya .swifty-event-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(114, 190, 68, 0.15);
+}
+
+.swifty-skin-gh2kenya .swifty-event-thumbnail {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+
+.swifty-skin-gh2kenya .swifty-event-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.swifty-skin-gh2kenya .swifty-event-item:hover .swifty-event-thumbnail img {
+    transform: scale(1.05);
+}
+
+.swifty-skin-gh2kenya .swifty-event-content {
+    padding: 24px;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-.swifty-skin-card .swifty-event-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 15px var(--swifty-hydrogen-green);
-    border-color: var(--swifty-hydrogen-green);
-}
-
-.swifty-skin-card .swifty-event-thumbnail img {
-    border-radius: 8px;
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    margin-bottom: 15px;
-}
-
-.swifty-skin-card .swifty-event-title a {
-    color: #fff;
-    text-decoration: none;
+.swifty-skin-gh2kenya .swifty-event-date {
+    display: inline-block;
+    background: var(--color-gradient-green);
+    color: var(--color-deep-blue);
+    padding: 4px 12px;
+    border-radius: 20px;
     font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    align-self: flex-start;
+    margin-bottom: 12px;
+}
+
+.swifty-skin-gh2kenya .swifty-event-title {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 10px;
+    color: var(--color-deep-blue);
+    line-height: 1.3;
+}
+
+.swifty-skin-gh2kenya .swifty-event-title a {
+    color: inherit;
+    text-decoration: none;
     transition: color 0.2s;
 }
 
-.swifty-skin-card .swifty-event-title a:hover {
-    color: var(--swifty-hydrogen-green);
+.swifty-skin-gh2kenya .swifty-event-title a:hover {
+    color: var(--color-primary-start);
 }
 
-.swifty-skin-card .swifty-event-date {
-    color: var(--swifty-hydrogen-green);
-    font-size: 0.9em;
+.swifty-skin-gh2kenya .swifty-event-excerpt {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.swifty-skin-gh2kenya .swifty-btn-details {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background: var(--color-deep-blue);
+    color: #fff;
+    border-radius: 30px;
     font-weight: 600;
-    margin-bottom: 10px;
+    font-size: 13px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-/* Minimal List Skin */
-.swifty-skin-list {
-    display: flex;
-    flex-direction: column;
+.swifty-skin-gh2kenya .swifty-btn-details:hover {
+    background: var(--color-gradient-green);
+    color: var(--color-deep-blue);
+    box-shadow: 0 5px 15px rgba(114, 190, 68, 0.3);
 }
 
-.swifty-skin-list .swifty-event-item {
+/* ===========================
+   Skin: Glass Minimal
+   =========================== */
+.swifty-skin-glass .swifty-event-item {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius);
+    padding: 24px;
     display: flex;
     align-items: center;
-    background: rgba(10, 10, 10, 0.8);
-    border-bottom: 1px solid var(--swifty-hydrogen-border);
-    padding: 15px;
-    color: #fff;
+    gap: 20px;
+    transition: all 0.3s ease;
 }
 
-.swifty-skin-list .swifty-event-date {
-    min-width: 100px;
-    color: var(--swifty-hydrogen-green);
-    font-weight: bold;
+.swifty-skin-glass .swifty-event-item:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    border-color: var(--color-primary-start);
 }
 
-.swifty-skin-list .swifty-event-title {
-    margin: 0;
-    flex-grow: 1;
-    font-size: 1.1em;
-}
-
-/* Featured Hero Skin */
-.swifty-skin-featured {
-    grid-template-columns: 1fr;
-    gap: 40px;
-}
-
-.swifty-skin-featured .swifty-event-item {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    height: 400px;
+.swifty-skin-glass .swifty-date-box {
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    color: var(--color-primary-start);
+    font-family: var(--font-heading);
 }
 
-.swifty-skin-featured .swifty-event-thumbnail {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
+.swifty-skin-glass .swifty-day { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+.swifty-skin-glass .swifty-month { font-size: 0.8rem; text-transform: uppercase; font-weight: 700; }
+
+.swifty-skin-glass .swifty-content { flex-grow: 1; }
+
+.swifty-skin-glass .swifty-event-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
 }
 
-.swifty-skin-featured .swifty-event-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.swifty-skin-glass .swifty-read-more {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-primary-start);
+    text-transform: uppercase;
+    text-decoration: none;
 }
 
-.swifty-skin-featured .swifty-event-content {
-    position: relative;
-    z-index: 2;
-    background: linear-gradient(to top, #000 0%, transparent 100%);
-    width: 100%;
-    padding: 30px;
+/* ===========================
+   Skin: Neon Tech
+   =========================== */
+.swifty-skin-neon .swifty-event-item {
+    background: #0f1211;
+    border: 1px solid rgba(114, 190, 68, 0.2);
+    border-radius: 8px;
+    padding: 0;
     color: #fff;
+    position: relative;
+    overflow: hidden;
 }
 
-.swifty-skin-featured .swifty-event-title {
-    font-size: 2.5em;
-    margin: 0 0 10px;
-    color: var(--swifty-hydrogen-green);
+.swifty-skin-neon .swifty-event-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    background: var(--color-primary-start);
+}
+
+.swifty-skin-neon .swifty-event-content { padding: 20px 20px 20px 30px; }
+
+.swifty-skin-neon .swifty-event-title {
+    color: #fff;
+    margin: 5px 0 10px;
+}
+
+.swifty-skin-neon .swifty-event-date {
+    color: var(--color-primary-start);
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+/* Add to Calendar Button */
+.swifty-add-calendar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #666;
+    margin-top: 10px;
+    cursor: pointer;
+    background: #f5f5f5;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.swifty-add-calendar-btn:hover {
+    background: #e0e0e0;
+    color: #333;
 }

@@ -3,7 +3,7 @@
  * Plugin Name: Swifty Events
  * Description: A powerful and easy-to-use event management plugin with Elementor integration.
  * Version: 1.0.0
- * Author: Antigravity
+ * Author: swiftkimani
  * Text Domain: swifty-events
  */
 
