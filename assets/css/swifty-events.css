@@ -22,6 +22,12 @@
     box-sizing: border-box;
 }
 
+/* Failsafe: Force visibility if JS crashes and leaves elementor-invisible class */
+.elementor-widget-swifty_event_list.elementor-invisible {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
 /* Layout Utilities */
 /* Layout Utilities */
 .swifty-layout-grid {

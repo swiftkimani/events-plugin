@@ -236,7 +236,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				
 				if ( 'glass' === $settings['skin'] ) {
 					// GLASS MINIMAL SKIN
-					if ( 'yes' === $settings['show_date'] && $event_date ) {
+					if ( ! empty( $settings['show_date'] ) && 'yes' === $settings['show_date'] && $event_date ) {
 						echo '<div class="swifty-date-box">';
 						echo '<span class="swifty-day">' . date_i18n( 'd', strtotime( $event_date ) ) . '</span>';
 						echo '<span class="swifty-month">' . date_i18n( 'M', strtotime( $event_date ) ) . '</span>';
@@ -259,7 +259,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 					echo '</div>';
 					
 					echo '<div class="swifty-event-content">';
-					if ( 'yes' === $settings['show_date'] && $event_date ) {
+					if ( ! empty( $settings['show_date'] ) && 'yes' === $settings['show_date'] && $event_date ) {
 						echo '<span class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</span>';
 					}
 					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
@@ -278,7 +278,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 					}
 					
 					echo '<div class="swifty-event-content">';
-					if ( 'yes' === $settings['show_date'] && $event_date ) {
+					if ( ! empty( $settings['show_date'] ) && 'yes' === $settings['show_date'] && $event_date ) {
 						echo '<span class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</span>';
 					}
 					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
