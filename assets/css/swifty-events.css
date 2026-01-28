@@ -29,6 +29,18 @@
     gap: 30px;
 }
 
+.swifty-layout-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.swifty-layout-list .swifty-event-item {
+    width: 100%;
+}
+/* Adjust skins for list view if needed (e.g., side-by-side image/content) implies a completely different internal structure, 
+   but for now we stack the cards vertically as requested. */
+
 .swifty-layout-flex {
     display: flex;
     flex-wrap: wrap;
@@ -37,6 +49,22 @@
 
 .swifty-layout-flex .swifty-event-item {
     flex: 1 1 300px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 767px) {
+    .swifty-layout-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .swifty-layout-flex {
+        flex-direction: column;
+    }
+    
+    .swifty-layout-flex .swifty-event-item {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
 }
 
 /* Animation Classes */
@@ -218,53 +246,93 @@
 /* ===========================
    Skin: Neon Tech
    =========================== */
-.swifty-skin-neon .swifty-event-item {
-    background: #0f1211;
-    border: 1px solid rgba(114, 190, 68, 0.2);
-    border-radius: 8px;
+/* ===========================
+   Skin: Gradient Glass (New Colorful Option)
+   =========================== */
+.swifty-skin-gradient_glass .swifty-event-item {
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,249,255,0.9) 100%);
+    border-radius: 20px;
     padding: 0;
-    color: #fff;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255,255,255,0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.swifty-skin-gradient_glass .swifty-event-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(114, 190, 68, 0.2);
+    border-color: var(--color-primary-start);
+}
+
+.swifty-skin-gradient_glass .swifty-event-thumbnail {
+    height: 200px;
     position: relative;
     overflow: hidden;
 }
 
-.swifty-skin-neon .swifty-event-item::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 4px; height: 100%;
-    background: var(--color-primary-start);
+.swifty-skin-gradient_glass .swifty-event-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
-.swifty-skin-neon .swifty-event-content { padding: 20px 20px 20px 30px; }
+.swifty-skin-gradient_glass .swifty-event-item:hover .swifty-event-thumbnail img {
+    transform: scale(1.08);
+}
 
-.swifty-skin-neon .swifty-event-title {
+.swifty-skin-gradient_glass .swifty-event-content {
+    padding: 25px;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(10px);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.swifty-skin-gradient_glass .swifty-event-date {
     color: #fff;
-    margin: 5px 0 10px;
+    background: linear-gradient(90deg, #36D1DC 0%, #5B86E5 100%); /* Blue gradient */
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    align-self: flex-start;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(91, 134, 229, 0.3);
 }
 
-.swifty-skin-neon .swifty-event-date {
-    color: var(--color-primary-start);
-    font-family: monospace;
-    font-size: 0.9rem;
-}
-
-/* Add to Calendar Button */
-.swifty-add-calendar-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: #666;
-    margin-top: 10px;
-    cursor: pointer;
-    background: #f5f5f5;
-    padding: 5px 10px;
-    border-radius: 4px;
+.swifty-skin-gradient_glass .swifty-event-title a {
+    background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%); /* Green gradient text */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.5rem;
+    font-weight: 800;
     text-decoration: none;
-    transition: all 0.2s;
 }
 
-.swifty-add-calendar-btn:hover {
-    background: #e0e0e0;
-    color: #333;
+.swifty-skin-gradient_glass .swifty-event-excerpt {
+    color: #555;
+    margin-top: 10px;
 }
+
+.swifty-skin-gradient_glass .swifty-btn-details {
+    margin-top: auto;
+    background: linear-gradient(90deg, #fc466b 0%, #3f5efb 100%); /* Vibrant purple/pink */
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.swifty-skin-gradient_glass .swifty-btn-details:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(63, 94, 251, 0.4);
+}
+

@@ -71,7 +71,8 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				'type' => \Elementor\Controls_Manager::SELECT,
 				'default' => 'grid',
 				'options' => array(
-					'grid' => __( 'Grid (Strict)', 'swifty-events' ),
+					'grid' => __( 'Grid (Rows)', 'swifty-events' ),
+					'list' => __( 'List (Column)', 'swifty-events' ),
 					'flex' => __( 'Flexbox (Flow)', 'swifty-events' ),
 				),
 			)
@@ -86,7 +87,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				'options' => array(
 					'gh2kenya' => __( 'Gh2Kenya Premium', 'swifty-events' ),
 					'glass' => __( 'Glass Minimal', 'swifty-events' ),
-					'neon' => __( 'Neon Tech', 'swifty-events' ),
+					'gradient_glass' => __( 'Gradient Glass', 'swifty-events' ),
 				),
 			)
 		);
@@ -112,26 +113,6 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				$cat_options[ $category->term_id ] = $category->name;
 			}
 		}
-
-		$this->add_control(
-			'category_filter',
-			array(
-				'label'   => __( 'Filter by Category', 'swifty-events' ),
-				'type'    => \Elementor\Controls_Manager::SELECT2,
-				'options' => $cat_options,
-				'multiple' => true,
-				'label_block' => true,
-			)
-		);
-		
-		$this->add_control(
-			'show_calendar_btn',
-			array(
-				'label' => __( 'Show Add to Calendar', 'swifty-events' ),
-				'type' => \Elementor\Controls_Manager::SWITCHER,
-				'default' => 'yes',
-			)
-		);
 
 		$this->add_control(
 			'excerpt_length',
@@ -226,15 +207,23 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 					echo '<a href="' . get_the_permalink() . '" class="swifty-read-more">' . __( 'Explore', 'swifty-events' ) . '</a>';
 					echo '</div>'; // End content
 
-				} elseif ( 'neon' === $settings['skin'] ) {
-					// NEON TECH SKIN
+					echo '</div>'; // End content
+
+				} elseif ( 'gradient_glass' === $settings['skin'] ) {
+					// GRADIENT GLASS SKIN (Replacing Neon)
+					echo '<div class="swifty-event-thumbnail">';
+					if ( has_post_thumbnail() ) {
+						the_post_thumbnail( 'medium_large' );
+					}
+					echo '</div>';
+					
 					echo '<div class="swifty-event-content">';
 					if ( 'yes' === $settings['show_date'] && $event_date ) {
-						echo '<div class="swifty-event-date">> SYSTEM_DATE: ' . date_i18n( 'Y.m.d', strtotime( $event_date ) ) . '</div>';
+						echo '<span class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</span>';
 					}
-					echo '<h3 class="swifty-event-title">' . get_the_title() . '</h3>';
+					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
 					echo '<div class="swifty-event-excerpt">' . $excerpt . '</div>';
-					echo '<a href="' . get_the_permalink() . '" style="color:var(--color-primary-start); text-transform:uppercase; font-size:0.8rem; letter-spacing:1px;">[ ACCESS_DATA ]</a>';
+					echo '<a href="' . get_the_permalink() . '" class="swifty-btn-details">' . __( 'Explore Event', 'swifty-events' ) . '</a>';
 					echo '</div>'; 
 
 				} else {
@@ -253,10 +242,6 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 					}
 					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
 					echo '<div class="swifty-event-excerpt">' . $excerpt . '</div>';
-					
-					if ( 'yes' === $settings['show_calendar_btn'] ) {
-						echo '<a href="' . esc_url( $google_cal_link ) . '" target="_blank" class="swifty-add-calendar-btn"><span class="dashicons dashicons-calendar-alt"></span> ' . __( 'Add to Calendar', 'swifty-events' ) . '</a>';
-					}
 					
 					echo '<a href="' . get_the_permalink() . '" class="swifty-btn-details">' . __( 'View Event', 'swifty-events' ) . '</a>';
 					echo '</div>'; 
