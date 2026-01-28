@@ -89,6 +89,17 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				'default' => 'yes',
 			)
 		);
+		
+		$this->add_control(
+			'excerpt_length',
+			array(
+				'label'   => __( 'Description Length (Words)', 'swifty-events' ),
+				'type'    => \Elementor\Controls_Manager::NUMBER,
+				'default' => 20,
+				'min'     => 5,
+				'max'     => 100,
+			)
+		);
 
 		$this->end_controls_section();
 		
@@ -140,46 +151,60 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			while ( $query->have_posts() ) {
 				$query->the_post();
 				$event_date = get_post_meta( get_the_ID(), '_swifty_event_date', true );
+				$excerpt = wp_trim_words( get_the_excerpt(), $settings['excerpt_length'], '...' );
+				
 				echo '<div class="swifty-event-item">';
 				
 				if ( 'featured' === $settings['skin'] ) {
-					// Featured Skin Layout
+					// FEATURED SKIN
 					if ( has_post_thumbnail() ) {
 						echo '<div class="swifty-event-thumbnail">';
 						the_post_thumbnail( 'full' );
 						echo '</div>';
 					}
+					echo '<div class="swifty-event-overlay"></div>';
 					echo '<div class="swifty-event-content">';
-					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
 					if ( 'yes' === $settings['show_date'] && $event_date ) {
-						echo '<p class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</p>';
+						echo '<span class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</span>';
 					}
-					echo '<div class="swifty-event-excerpt">' . get_the_excerpt() . '</div>';
-					echo '</div>'; // End content
+					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
+					echo '<div class="swifty-event-excerpt">' . $excerpt . '</div>';
+					echo '</div>'; 
 					
 				} elseif ( 'list' === $settings['skin'] ) {
-					// Minimal List Layout
+					// MINIMAL LIST SKIN
 					if ( 'yes' === $settings['show_date'] && $event_date ) {
-						echo '<div class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</div>';
+						$day = date_i18n( 'd', strtotime( $event_date ) );
+						$month = date_i18n( 'M', strtotime( $event_date ) );
+						echo '<div class="swifty-event-date-box">';
+						echo '<span class="swifty-date-day">' . $day . '</span>';
+						echo '<span class="swifty-date-month">' . $month . '</span>';
+						echo '</div>';
 					}
 					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
-					echo '<a href="' . get_the_permalink() . '" class="swifty-event-link">' . __( 'View', 'swifty-events' ) . ' &rarr;</a>';
+					echo '<a href="' . get_the_permalink() . '" class="swifty-read-more">' . __( 'Details', 'swifty-events' ) . ' &rarr;</a>';
 					
 				} else {
-					// Default Card Layout
+					// DEFAULT CARD SKIN
 					if ( has_post_thumbnail() ) {
 						echo '<div class="swifty-event-thumbnail">';
+						echo '<a href="' . get_the_permalink() . '">';
 						the_post_thumbnail( 'medium_large' );
+						echo '</a>';
 						echo '</div>';
 					}
 					
-					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
+					echo '<div class="swifty-event-content-wrap">';
 					
 					if ( 'yes' === $settings['show_date'] && $event_date ) {
-						echo '<p class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</p>';
+						echo '<span class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</span>';
 					}
 					
-					echo '<div class="swifty-event-excerpt">' . get_the_excerpt() . '</div>';
+					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
+					echo '<div class="swifty-event-excerpt">' . $excerpt . '</div>';
+					echo '<a href="' . get_the_permalink() . '" class="swifty-read-more">' . __( 'See Details', 'swifty-events' ) . ' &rarr;</a>';
+					
+					echo '</div>'; // End content-wrap
 				}
 				
 				echo '</div>';
