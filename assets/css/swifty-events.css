@@ -1,0 +1,57 @@
+/* Swifty Events Frontend Styles */
+
+.swifty-event-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.swifty-event-item {
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
+}
+
+.swifty-event-item:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.swifty-event-thumbnail img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.swifty-event-title {
+    margin: 0 0 10px;
+    font-size: 1.25em;
+}
+
+.swifty-event-title a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.swifty-event-date {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.swifty-event-details {
+    margin-top: 20px;
+}
+
+.swifty-event-detail-item {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.swifty-event-detail-item .swifty-label {
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 80px;
+}
