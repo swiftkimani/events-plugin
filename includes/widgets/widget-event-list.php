@@ -134,6 +134,18 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 		}
 
 		$this->add_control(
+			'show_date',
+			array(
+				'label'        => __( 'Show Date', 'swifty-events' ),
+				'type'         => \Elementor\Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Show', 'swifty-events' ),
+				'label_off'    => __( 'Hide', 'swifty-events' ),
+				'return_value' => 'yes',
+				'default'      => 'yes',
+			)
+		);
+
+		$this->add_control(
 			'excerpt_length',
 			array(
 				'label'   => __( 'Description Length (Words)', 'swifty-events' ),
@@ -174,7 +186,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 
 		$args = array(
 			'post_type'      => 'event',
-			'post_status'    => 'publish',
+			'post_status'    => array( 'publish', 'future' ), // Include future events
 			'posts_per_page' => $settings['posts_per_page'],
 		);
 		
@@ -199,6 +211,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				$anim_class = 'swifty-anim-zoom-in';
 			}
 
+			// Add debug attribute
 			$layout_class = 'swifty-layout-' . esc_attr( $settings['layout_mode'] );
 			if ( 'flex' === $settings['layout_mode'] ) {
 				$layout_class .= ' swifty-flex-' . esc_attr( $settings['flex_direction'] );
@@ -212,11 +225,14 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				$event_date = get_post_meta( get_the_ID(), '_swifty_event_date', true );
 				$excerpt = wp_trim_words( get_the_excerpt(), $settings['excerpt_length'], '...' );
 				$google_cal_link = 'https://www.google.com/calendar/render?action=TEMPLATE&text=' . urlencode( get_the_title() ) . '&dates=' . date( 'Ymd', strtotime( $event_date ) ) . '/' . date( 'Ymd', strtotime( $event_date ) ) . '&details=' . urlencode( get_the_excerpt() );
-
-				// Inline animation delay
-				$style_delay = $delay > 0 ? 'style="animation-delay: ' . $delay . 's;"' : '';
 				
-				echo '<div class="swifty-event-item ' . esc_attr( $anim_class ) . '" ' . $style_delay . '>';
+				// Ensure item is visible if animation is none
+				$style = '';
+				if ( ! empty( $anim_class ) ) {
+					$style = 'style="animation-delay: ' . $delay . 's;"';
+				}
+
+				echo '<div class="swifty-event-item ' . esc_attr( $anim_class ) . '" ' . $style . '>';
 				
 				if ( 'glass' === $settings['skin'] ) {
 					// GLASS MINIMAL SKIN
@@ -278,7 +294,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			echo '</div>';
 			wp_reset_postdata();
 		} else {
-			echo __( 'No events found.', 'swifty-events' );
+			echo '<div class="swifty-no-events" style="padding: 20px; text-align: center; color: #555; border: 1px dashed #ccc;">' . __( 'No events found.', 'swifty-events' ) . '</div>';
 		}
 	}
 

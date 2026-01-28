@@ -81,11 +81,16 @@
 /* Animation Classes */
 /* Animation Classes */
 .swifty-anim-fade-up {
-    animation: swiftyFadeUp 0.6s ease-out both;
+    animation: swiftyFadeUp 0.6s ease-out forwards;
 }
 
 .swifty-anim-zoom-in {
-    animation: swiftyZoomIn 0.5s ease-out both;
+    animation: swiftyZoomIn 0.5s ease-out forwards;
+}
+
+/* Default state: Visible (let animation handle opacity if running, otherwise stay visible) */
+.swifty-event-item {
+    opacity: 1; 
 }
 
 @keyframes swiftyFadeUp {
