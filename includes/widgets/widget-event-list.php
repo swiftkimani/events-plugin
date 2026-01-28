@@ -65,6 +65,20 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 		);
 		
 		$this->add_control(
+			'skin',
+			array(
+				'label' => __( 'Skin', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'default' => 'card',
+				'options' => array(
+					'card' => __( 'Green Hydrogen Card', 'swifty-events' ),
+					'list' => __( 'Minimal List', 'swifty-events' ),
+					'featured' => __( 'Featured Hero', 'swifty-events' ),
+				),
+			)
+		);
+		
+		$this->add_control(
 			'show_date',
 			array(
 				'label' => __( 'Show Date', 'swifty-events' ),
@@ -122,25 +136,51 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 		$query = new \WP_Query( $args );
 
 		if ( $query->have_posts() ) {
-			echo '<div class="swifty-event-list">';
+			echo '<div class="swifty-event-list swifty-skin-' . esc_attr( $settings['skin'] ) . '">';
 			while ( $query->have_posts() ) {
 				$query->the_post();
 				$event_date = get_post_meta( get_the_ID(), '_swifty_event_date', true );
 				echo '<div class="swifty-event-item">';
 				
-				if ( has_post_thumbnail() ) {
-					echo '<div class="swifty-event-thumbnail">';
-					the_post_thumbnail( 'medium' );
-					echo '</div>';
+				if ( 'featured' === $settings['skin'] ) {
+					// Featured Skin Layout
+					if ( has_post_thumbnail() ) {
+						echo '<div class="swifty-event-thumbnail">';
+						the_post_thumbnail( 'full' );
+						echo '</div>';
+					}
+					echo '<div class="swifty-event-content">';
+					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
+					if ( 'yes' === $settings['show_date'] && $event_date ) {
+						echo '<p class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</p>';
+					}
+					echo '<div class="swifty-event-excerpt">' . get_the_excerpt() . '</div>';
+					echo '</div>'; // End content
+					
+				} elseif ( 'list' === $settings['skin'] ) {
+					// Minimal List Layout
+					if ( 'yes' === $settings['show_date'] && $event_date ) {
+						echo '<div class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</div>';
+					}
+					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
+					echo '<a href="' . get_the_permalink() . '" class="swifty-event-link">' . __( 'View', 'swifty-events' ) . ' &rarr;</a>';
+					
+				} else {
+					// Default Card Layout
+					if ( has_post_thumbnail() ) {
+						echo '<div class="swifty-event-thumbnail">';
+						the_post_thumbnail( 'medium_large' );
+						echo '</div>';
+					}
+					
+					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
+					
+					if ( 'yes' === $settings['show_date'] && $event_date ) {
+						echo '<p class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</p>';
+					}
+					
+					echo '<div class="swifty-event-excerpt">' . get_the_excerpt() . '</div>';
 				}
-				
-				echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
-				
-				if ( 'yes' === $settings['show_date'] && $event_date ) {
-					echo '<p class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</p>';
-				}
-				
-				echo '<div class="swifty-event-excerpt">' . get_the_excerpt() . '</div>';
 				
 				echo '</div>';
 			}

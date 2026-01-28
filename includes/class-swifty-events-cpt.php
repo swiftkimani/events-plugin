@@ -111,7 +111,8 @@ class Swifty_Events_CPT {
 			'label'               => __( 'Event', 'swifty-events' ),
 			'description'         => __( 'Post Type for Events', 'swifty-events' ),
 			'labels'              => $labels,
-			'supports'            => array( 'title', 'editor', 'thumbnail', 'excerpt' ),
+			'labels'              => $labels,
+			'supports'            => array( 'title', 'thumbnail' ), // Removed 'editor'
 			'taxonomies'          => array( 'category', 'post_tag' ),
 			'hierarchical'        => false,
 			'public'              => true,
@@ -126,7 +127,7 @@ class Swifty_Events_CPT {
 			'exclude_from_search' => false,
 			'publicly_queryable'  => true,
 			'capability_type'     => 'post',
-			'show_in_rest'        => true, // Enable Gutenberg editor
+			'show_in_rest'        => false, // Disable Gutenberg to use Classic Meta Boxes
 		);
 		register_post_type( 'event', $args );
 	}
@@ -136,7 +137,18 @@ class Swifty_Events_CPT {
 			'swifty_events_details',
 			__( 'Event Details', 'swifty-events' ),
 			array( $this, 'render_meta_box' ),
-			'event'
+			'event',
+			'normal',
+			'high'
+		);
+		
+		add_meta_box(
+			'swifty_events_description',
+			__( 'Event Description', 'swifty-events' ),
+			array( $this, 'render_description_meta_box' ),
+			'event',
+			'normal',
+			'high'
 		);
 	}
 
@@ -237,6 +249,29 @@ class Swifty_Events_CPT {
 		if ( isset( $_POST['swifty_recurrence_type'] ) ) {
 			update_post_meta( $post_id, '_swifty_recurrence_type', sanitize_text_field( $_POST['swifty_recurrence_type'] ) );
 		}
+		
+		// Save Description
+		if ( isset( $_POST['swifty_event_description'] ) ) {
+			$post_data = array(
+				'ID'           => $post_id,
+				'post_content' => wp_kses_post( $_POST['swifty_event_description'] ),
+			);
+			// Validate to prevent infinite loop
+			if ( ! wp_is_post_revision( $post_id ) ) {
+				// Unhook to prevent loop
+				remove_action( 'save_post', array( $this, 'save_meta_box_data' ) );
+				wp_update_post( $post_data );
+				add_action( 'save_post', array( $this, 'save_meta_box_data' ) );
+			}
+		}
+	}
+	
+	public function render_description_meta_box( $post ) {
+		$content = $post->post_content;
+		wp_editor( $content, 'swifty_event_description', array(
+			'media_buttons' => true,
+			'textarea_rows' => 10,
+		) );
 	}
 
 }
