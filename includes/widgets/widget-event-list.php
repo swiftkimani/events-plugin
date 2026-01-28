@@ -21,6 +21,10 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 		return array( 'swifty-events' );
 	}
 
+	public function get_style_depends() {
+		return array( 'swifty-events-css' );
+	}
+
 	protected function register_controls() {
 
 		$this->start_controls_section(
@@ -170,6 +174,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 
 		$args = array(
 			'post_type'      => 'event',
+			'post_status'    => 'publish',
 			'posts_per_page' => $settings['posts_per_page'],
 		);
 		
