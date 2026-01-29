@@ -38,6 +38,7 @@ class Swifty_Events_Elementor_Integration {
 		require_once SWIFTY_EVENTS_PATH . 'includes/widgets/widget-event-calendar.php';
 		require_once SWIFTY_EVENTS_PATH . 'includes/widgets/widget-event-submission.php';
 		require_once SWIFTY_EVENTS_PATH . 'includes/widgets/widget-event-latest-category.php';
+		require_once SWIFTY_EVENTS_PATH . 'includes/widgets/widget-wigh-event-list.php';
 
 		$widgets_manager->register( new \Swifty_Events_Event_List_Widget() );
 		$widgets_manager->register( new \Swifty_Events_Event_Detail_Widget() );
@@ -45,6 +46,7 @@ class Swifty_Events_Elementor_Integration {
 		$widgets_manager->register( new \Swifty_Events_Event_Calendar_Widget() );
 		$widgets_manager->register( new \Swifty_Events_Event_Submission_Widget() );
 		$widgets_manager->register( new \Swifty_Events_Latest_Category_Widget() );
+		$widgets_manager->register( new \Swifty_Events_Wigh_List_Widget() );
 	}
 
 }
