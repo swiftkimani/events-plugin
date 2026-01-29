@@ -147,25 +147,39 @@
 /* --- SKINS --- */
 
 /* 1. GH2KENYA Premium Skin */
+/* 1. GH2KENYA Premium Skin - Modern White + Glass */
 .swifty-skin-gh2kenya .swifty-event-item {
-    background: #fff;
-    border-radius: var(--radius);
+    background: #ffffff;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.03);
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08); /* Soft, premium shadow */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border: 1px solid rgba(0,0,0,0.04);
     display: flex;
     flex-direction: column;
+    z-index: 1; /* For stacking context */
+}
+
+/* Glass effect overlay for hover */
+.swifty-skin-gh2kenya .swifty-event-item::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    border-radius: 24px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); /* Inner light border */
+    z-index: 2;
 }
 
 .swifty-skin-gh2kenya .swifty-event-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12); /* Deeper shadow on hover */
 }
 
 .swifty-skin-gh2kenya .swifty-event-thumbnail {
     position: relative;
-    height: 200px; /* Fixed height for consistency */
+    height: 240px; /* Taller image */
     overflow: hidden;
 }
 
@@ -173,26 +187,95 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
-    display: block; /* Remove bottom space */
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: block;
 }
 
 .swifty-skin-gh2kenya .swifty-event-item:hover .swifty-event-thumbnail img {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .swifty-skin-gh2kenya .swifty-event-content {
-    padding: 24px;
+    padding: 28px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     flex-grow: 1;
+    position: relative;
+    background: #fff; /* Ensure solid white bg */
+}
+
+/* Glass Badge for Date (Top Right) */
+.swifty-skin-gh2kenya .swifty-event-date {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-deep-blue);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* 1. Glass Category Badge (Top Left) */
+.swifty-event-category-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 6px 14px;
+    background: rgba(14, 27, 45, 0.6); /* Dark semi-transparent */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 5;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.swifty-skin-gh2kenya .swifty-event-item:hover .swifty-event-category-badge {
+    background: rgba(14, 27, 45, 0.8);
+    transform: translateY(-2px);
+}
+
+/* 2. Animated Gradient Border Shine */
+.swifty-skin-gh2kenya .swifty-event-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-primary-start), var(--color-primary-end), transparent);
+    background-size: 200% 100%;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    animation: none;
+}
+
+.swifty-skin-gh2kenya .swifty-event-item:hover::before {
+    opacity: 1;
+    animation: swiftyBorderShine 2s infinite linear;
+}
+
+@keyframes swiftyBorderShine {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
 }
 
 .swifty-skin-gh2kenya .swifty-event-title {
-    margin: 0;
+    margin: 4px 0 0 0;
     font-family: var(--font-heading);
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     line-height: 1.3;
     font-weight: 700;
 }
@@ -201,38 +284,96 @@
     color: var(--color-deep-blue);
     text-decoration: none;
     transition: color 0.2s;
+    background-image: linear-gradient(90deg, var(--color-primary-start), var(--color-primary-end));
+    background-size: 0% 2px;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    transition: background-size 0.3s ease;
 }
 
 .swifty-skin-gh2kenya .swifty-event-title a:hover {
-    color: var(--color-primary-start);
+    background-size: 100% 2px;
+    color: var(--color-deep-blue);
 }
 
-.swifty-skin-gh2kenya .swifty-event-date {
-    display: inline-block;
-    padding: 4px 10px;
-    background: rgba(114, 190, 68, 0.1);
-    color: var(--color-primary-start);
-    border-radius: 50px;
-    font-size: 0.8rem;
+/* Excerpt Styling */
+.swifty-event-excerpt {
+    font-size: 0.95rem;
+    color: #5d6778;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.swifty-skin-gh2kenya .swifty-event-location,
+.swifty-skin-gh2kenya .swifty-event-organizer {
+    font-size: 0.85rem;
+    color: #8898aa;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 600;
-    align-self: flex-start;
 }
 
+.swifty-skin-gh2kenya .swifty-event-location::before {
+    content: '\f3c5'; /* FontAwesome map-marker-alt */
+    font-family: 'Font Awesome 5 Free'; 
+    font-weight: 900;
+    color: var(--color-primary-start);
+    opacity: 0.8;
+}
+
+.swifty-skin-gh2kenya .swifty-event-organizer::before {
+    content: '\f2c0'; /* User icon */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: var(--color-primary-start);
+    opacity: 0.8;
+}
+
+/* 3. Button Micro-interaction */
 .swifty-skin-gh2kenya .swifty-btn-details {
-    margin-top: auto; /* Push to bottom */
-    display: inline-block;
-    padding: 12px 24px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
     background: var(--color-deep-blue);
     color: #fff;
     text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: 12px;
+    font-weight: 700;
     text-align: center;
-    transition: background 0.3s;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 15px rgba(14, 27, 45, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.swifty-skin-gh2kenya .swifty-btn-details::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: skewX(-20deg);
+    transition: 0.5s;
 }
 
 .swifty-skin-gh2kenya .swifty-btn-details:hover {
-    background: var(--color-primary-start);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(14, 27, 45, 0.25);
+    background: var(--color-deep-blue); /* Keep base color */
+}
+
+.swifty-skin-gh2kenya .swifty-btn-details:hover::after {
+    left: 140%;
+    transition: 0.5s ease-in-out;
 }
 
 /* 2. Glass Minimal Skin */

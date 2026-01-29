@@ -415,6 +415,13 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 									<?php if (has_post_thumbnail()) : ?>
 										<div class="swifty-event-thumbnail">
 											<?php the_post_thumbnail('large'); ?>
+											<?php 
+											$categories = get_the_terms(get_the_ID(), 'event_category');
+											if ($categories && !is_wp_error($categories)) {
+												$first_cat = $categories[0];
+												echo '<span class="swifty-event-category-badge">' . esc_html($first_cat->name) . '</span>';
+											}
+											?>
 										</div>
 									<?php endif; ?>
 									
@@ -437,6 +444,10 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 												<?php echo esc_html($event_location); ?>
 											</p>
 										<?php endif; ?>
+										
+										<div class="swifty-event-excerpt">
+											<?php echo wp_trim_words(get_the_excerpt(), $settings['excerpt_length'], '...'); ?>
+										</div>
 										
 										<?php if ($event_organizer) : ?>
 											<p class="swifty-event-organizer">
@@ -507,7 +518,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			echo '<div class="swifty-filter-group swifty-quick-actions">';
 			$is_upcoming = ( isset($_GET['upcoming']) && $_GET['upcoming'] == 'true' );
 			echo '<button type="button" class="swifty-btn swifty-btn-upcoming ' . ( $is_upcoming ? 'active' : '' ) . '">';
-			echo '<i class="eicon-calendar"></i> ' . __( 'Show Upcoming Events', 'swifty-events' );
+			echo '<i class="eicon-calendar"></i> ' . __( 'Upcoming Events', 'swifty-events' );
 			echo '</button>';
 			// Hidden input to handle the state submission if form is submitted normally
 			echo '<input type="hidden" name="upcoming" class="swifty-upcoming-input" value="' . ( $is_upcoming ? 'true' : '' ) . '">';
