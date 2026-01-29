@@ -394,3 +394,407 @@
     transform: scale(1.02);
 }
 
+/* ===========================
+   Modern Sidebar Layout & Filter
+   =========================== */
+
+/* Variables for Modern Theme */
+:root {
+    --swifty-primary: #0E1B2D;
+    --swifty-primary-gradient: linear-gradient(135deg, #0E1B2D 0%, #1c3a5e 100%);
+    --swifty-accent: #3b82f6; /* Bright blue for focus/active */
+    --swifty-bg-input: #f3f4f6;
+    --swifty-shadow-soft: 0 10px 30px rgba(14, 27, 45, 0.06);
+    --swifty-shadow-hover: 0 20px 40px rgba(14, 27, 45, 0.12);
+    --swifty-radius-lg: 24px;
+    --swifty-radius-md: 16px;
+    --swifty-font: 'Montserrat', sans-serif;
+}
+
+.swifty-events-wrapper-with-sidebar {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.swifty-events-main-content {
+    flex-grow: 1;
+    width: 100%;
+}
+
+.swifty-events-filter-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 40px;
+    background: #fff;
+    padding: 32px;
+    border-radius: var(--swifty-radius-lg);
+    box-shadow: var(--swifty-shadow-soft);
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Subtle white border */
+    transition: box-shadow 0.3s ease;
+}
+
+.swifty-events-filter-sidebar:hover {
+    box-shadow: var(--swifty-shadow-hover);
+}
+
+/* Override Grid */
+.swifty-events-wrapper-with-sidebar .swifty-layout-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+/* ===========================
+   Premium Filter Form
+   =========================== */
+.swifty-filter-group {
+    margin-bottom: 28px;
+    position: relative;
+}
+
+.swifty-filter-label {
+    display: block;
+    font-family: var(--swifty-font);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #8898aa;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+/* Modern Input/Select Styling */
+/* Reset defaults */
+.swifty-search-input,
+.swifty-form-select,
+.swifty-form-date {
+    width: 100%;
+    padding: 16px 20px;
+    border: none;
+    background: var(--swifty-bg-input);
+    border-radius: var(--swifty-radius-md);
+    font-family: var(--swifty-font);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--swifty-primary);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    
+    /* Remove Default Arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.swifty-search-input::placeholder {
+    color: #a0aec0;
+    font-weight: 500;
+}
+
+/* Focus States */
+.swifty-search-input:focus,
+.swifty-form-select:focus,
+.swifty-form-date:focus {
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), inset 0 0 0 1px var(--swifty-accent);
+    transform: translateY(-1px);
+}
+
+/* Search Icon Button */
+.swifty-search-wrapper {
+    position: relative;
+}
+
+.swifty-search-input {
+    padding-right: 50px;
+}
+
+.swifty-search-icon-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    color: var(--swifty-primary);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+}
+
+.swifty-search-icon-btn:hover {
+    background: var(--swifty-primary);
+    color: #fff;
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Custom Select Arrow */
+.swifty-select-wrapper::after {
+    content: '\e8ad'; /* Elementor arrow or similar? Using CSS arrow for safety */
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--swifty-primary);
+    border-bottom: 2px solid var(--swifty-primary);
+    position: absolute;
+    right: 24px;
+    top: 45%;
+    transform: translateY(-50%) rotate(45deg);
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* Action Buttons */
+.swifty-filter-actions {
+    display: flex;
+    flex-direction: column; /* Stack on right sidebar for cleaner look */
+    gap: 12px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px dashed #eef2f6;
+}
+
+.swifty-btn {
+    position: relative;
+    font-family: var(--swifty-font);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 16px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    overflow: hidden;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+/* Apply Button - Gradient */
+.swifty-btn-apply {
+    background: var(--swifty-primary-gradient);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(14, 27, 45, 0.25);
+}
+
+.swifty-btn-apply::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.swifty-btn-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(14, 27, 45, 0.35);
+}
+
+.swifty-btn-apply:hover::before {
+    opacity: 1;
+}
+
+/* Clear Button - Ghost */
+.swifty-btn-clear {
+    background: transparent;
+    color: #e53e3e;
+    font-size: 0.85rem;
+    padding: 10px;
+    opacity: 0.8;
+}
+
+.swifty-btn-clear:hover {
+    background: rgba(229, 62, 62, 0.05);
+    opacity: 1;
+}
+
+/* Upcoming Quick Button */
+.swifty-quick-actions {
+    margin-top: 0;
+}
+
+.swifty-btn-upcoming {
+    width: 100%;
+    background: #fff;
+    border: 2px solid #eef2f6;
+    color: var(--swifty-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.swifty-btn-upcoming:hover {
+    border-color: var(--swifty-primary);
+    background: #fff;
+    color: var(--swifty-primary);
+}
+
+.swifty-btn-upcoming.active {
+    background: var(--swifty-primary);
+    color: #fff;
+    border-color: var(--swifty-primary);
+    box-shadow: 0 4px 15px rgba(14, 27, 45, 0.2);
+}
+
+/* ===========================
+   Mobile Modal (Bottom Sheet)
+   =========================== */
+
+/* Desktop Trigger Hidden */
+.swifty-mobile-filter-trigger-wrapper {
+    display: none;
+}
+
+.swifty-modal-close {
+    display: none;
+}
+
+@media (max-width: 991px) {
+    .swifty-events-wrapper-with-sidebar {
+        flex-direction: column;
+    }
+
+    /* Mobile Trigger - Premium Floating Bar */
+    .swifty-mobile-filter-trigger-wrapper {
+        display: block;
+        margin-bottom: 24px;
+        /* Removed sticky positioning per user request */
+        position: relative; 
+        z-index: 10;
+    }
+
+    .swifty-mobile-filter-btn {
+        width: 100%;
+        background: var(--swifty-primary-gradient);
+        color: #fff;
+        border: none;
+        padding: 16px 24px;
+        border-radius: 16px;
+        font-family: var(--swifty-font);
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 10px 25px rgba(14, 27, 45, 0.2);
+        transition: transform 0.2s;
+    }
+    
+    .swifty-mobile-filter-btn:active {
+        transform: scale(0.98);
+    }
+    
+    .swifty-mobile-filter-btn i {
+        font-size: 1.2rem;
+        background: rgba(255,255,255,0.2);
+        width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%;
+    }
+
+    /* Bottom Sheet Modal */
+    .swifty-events-filter-sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto; /* Not full height */
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        max-height: 85vh; /* Keep some space at top */
+        z-index: 9999;
+        
+        background: #fff;
+        border-radius: 24px 24px 0 0; /* Round top only */
+        padding: 50px 24px 30px 24px; /* Increased top padding */
+        
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+        overflow-y: auto;
+        
+        transform: translateY(100%); /* Slide UP */
+        transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+        
+        order: unset;
+        margin-bottom: 0;
+        border: none;
+    }
+
+    /* Modal Active State */
+    .swifty-filter-modal-active .swifty-events-filter-sidebar {
+        transform: translateY(0);
+        display: block;
+    }
+
+    /* Handle Bar */
+    .swifty-events-filter-sidebar::before {
+        content: '';
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 5px;
+        background: #e2e8f0;
+        border-radius: 10px;
+    }
+
+    /* Backdrop (Real Element Logic) */
+    .swifty-filter-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(14, 27, 45, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 9998;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+        cursor: pointer; /* Indicates clickable */
+    }
+
+    .swifty-filter-modal-active .swifty-filter-backdrop {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Deprecate old pseudo backdrop if exists to prevent double overlay */
+    .swifty-filter-modal-active::before {
+        display: none;
+    }
+    
+    /* Close Button - Enhanced Visibility */
+    .swifty-modal-close {
+        display: block;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #e74c3c; /* Red background for visibility */
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        font-size: 1.8rem;
+        color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        padding-bottom: 4px; /* visual center fix */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        z-index: 10001; /* Higher than backdrop (9998) and sidebar (9999) if needed */
+        cursor: pointer;
+    }
+    
+    /* Adjust sidebar padding to ensure Close Button doesn't overlap search */
+    .swifty-events-filter-sidebar {
+        padding-top: 70px; /* More space at top for X button row */
+        z-index: 9999;
+    }
+}
