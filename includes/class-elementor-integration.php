@@ -37,12 +37,14 @@ class Swifty_Events_Elementor_Integration {
 		require_once SWIFTY_EVENTS_PATH . 'includes/widgets/widget-event-countdown.php';
 		require_once SWIFTY_EVENTS_PATH . 'includes/widgets/widget-event-calendar.php';
 		require_once SWIFTY_EVENTS_PATH . 'includes/widgets/widget-event-submission.php';
+		require_once SWIFTY_EVENTS_PATH . 'includes/widgets/widget-event-latest-category.php';
 
 		$widgets_manager->register( new \Swifty_Events_Event_List_Widget() );
 		$widgets_manager->register( new \Swifty_Events_Event_Detail_Widget() );
 		$widgets_manager->register( new \Swifty_Events_Event_Countdown_Widget() );
 		$widgets_manager->register( new \Swifty_Events_Event_Calendar_Widget() );
 		$widgets_manager->register( new \Swifty_Events_Event_Submission_Widget() );
+		$widgets_manager->register( new \Swifty_Events_Latest_Category_Widget() );
 	}
 
 }

@@ -1028,10 +1028,15 @@ div.swifty-select-wrapper { position: relative; } /* Ensure wrapper is relative 
         transform: scale(0.98);
     }
     
-    .swifty-mobile-filter-btn i {
-        font-size: 1.2rem;
+    .swifty-mobile-filter-btn i,
+    .swifty-mobile-filter-btn svg {
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
+        fill: currentColor; /* For SVGs */
         background: rgba(255,255,255,0.2);
         padding: 8px;
+        box-sizing: content-box; /* Ensure padding doesn't shrink content if width set */
         border-radius: 8px;
     }
 
@@ -1359,4 +1364,39 @@ div.swifty-select-wrapper { position: relative; } /* Ensure wrapper is relative 
 .swifty-pagination-top {
     margin-top: 0;
     margin-bottom: 30px;
+}
+/* Full Width Layout when Sidebar is Hidden */
+.swifty-no-sidebar .swifty-events-main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+}
+
+.swifty-no-sidebar .swifty-events-filter-sidebar {
+    display: none !important;
+}
+
+/* Ensure Grid expands in full width mode and reflows to show more cards */
+.swifty-no-sidebar .swifty-layout-grid {
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+}
+
+/* Ensure Flex wraps correctly in full width */
+.swifty-no-sidebar .swifty-layout-flex.swifty-flex-row {
+    flex-wrap: wrap;
+    width: 100%;
+}
+.swifty-no-sidebar .swifty-layout-flex.swifty-flex-row .swifty-event-item {
+    flex: 1 1 280px; /* Allow shrinking down to 280 before wrapping */
+    max-width: none;
+}
+
+/* Default Widget Title */
+.swifty-widget-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-deep-blue);
+    margin-bottom: 24px;
+    line-height: 1.2;
 }

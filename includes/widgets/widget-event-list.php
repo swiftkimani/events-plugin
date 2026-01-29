@@ -169,6 +169,33 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			)
 		);
 		
+		$this->add_control(
+			'filter_btn_text',
+			array(
+				'label' => __( 'Filter Button Text', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::TEXT,
+				'default' => __( 'Filter Events', 'swifty-events' ),
+				'condition' => array(
+					'show_filter_sidebar' => 'yes',
+				),
+			)
+		);
+
+		$this->add_control(
+			'filter_btn_icon',
+			array(
+				'label' => __( 'Filter Button Icon', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::ICONS,
+				'default' => array(
+					'value' => 'fas fa-filter',
+					'library' => 'fa-solid',
+				),
+				'condition' => array(
+					'show_filter_sidebar' => 'yes',
+				),
+			)
+		);
+		
 		// --- PAGINATION CONTROLS ---
 		$this->add_control(
 			'swifty_pagination_enable',
@@ -244,6 +271,139 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			)
 		);
 
+		$this->end_controls_section();
+
+		// --- FILTER BUTTON STYLE SECTION ---
+		$this->start_controls_section(
+			'section_style_filter_btn',
+			array(
+				'label' => __( 'Filter Toggle Button', 'swifty-events' ),
+				'tab' => \Elementor\Controls_Manager::TAB_STYLE,
+				'condition' => array(
+					'show_filter_sidebar' => 'yes',
+				),
+			)
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			array(
+				'name' => 'filter_btn_typography',
+				'selector' => '{{WRAPPER}} .swifty-mobile-filter-btn',
+			)
+		);
+
+		$this->start_controls_tabs( 'tabs_filter_btn_style' );
+
+		$this->start_controls_tab(
+			'tab_filter_btn_normal',
+			array(
+				'label' => __( 'Normal', 'swifty-events' ),
+			)
+		);
+
+		$this->add_control(
+			'filter_btn_text_color',
+			array(
+				'label' => __( 'Text Color', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::COLOR,
+				'default' => '',
+				'selectors' => array(
+					'{{WRAPPER}} .swifty-mobile-filter-btn' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .swifty-mobile-filter-btn i' => 'color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'filter_btn_bg_color',
+			array(
+				'label' => __( 'Background Color', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::COLOR,
+				'default' => '',
+				'selectors' => array(
+					'{{WRAPPER}} .swifty-mobile-filter-btn' => 'background-color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_filter_btn_hover',
+			array(
+				'label' => __( 'Hover', 'swifty-events' ),
+			)
+		);
+
+		$this->add_control(
+			'filter_btn_hover_color',
+			array(
+				'label' => __( 'Text Color', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .swifty-mobile-filter-btn:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .swifty-mobile-filter-btn:hover i' => 'color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'filter_btn_hover_bg_color',
+			array(
+				'label' => __( 'Background Color', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .swifty-mobile-filter-btn:hover' => 'background-color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			array(
+				'name' => 'filter_btn_border',
+				'selector' => '{{WRAPPER}} .swifty-mobile-filter-btn',
+				'separator' => 'before',
+			)
+		);
+
+		$this->add_control(
+			'filter_btn_border_radius',
+			array(
+				'label' => __( 'Border Radius', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%' ),
+				'selectors' => array(
+					'{{WRAPPER}} .swifty-mobile-filter-btn' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Box_Shadow::get_type(),
+			array(
+				'name' => 'filter_btn_box_shadow',
+				'selector' => '{{WRAPPER}} .swifty-mobile-filter-btn',
+			)
+		);
+
+		$this->add_responsive_control(
+			'filter_btn_padding',
+			array(
+				'label' => __( 'Padding', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', 'em', '%' ),
+				'selectors' => array(
+					'{{WRAPPER}} .swifty-mobile-filter-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			)
+		);
+		
 		$this->end_controls_section();
 		
 		$this->start_controls_section(
@@ -379,18 +539,26 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 		<div class="swifty-event-list" data-widget-id="<?php echo esc_attr($this->get_id()); ?>">
 			
 			<!-- Mobile Filter Trigger -->
+			<?php if ( $settings['show_filter_sidebar'] === 'yes' ) : ?>
 			<div class="swifty-mobile-filter-trigger-wrapper">
 				<button type="button" class="swifty-mobile-filter-btn">
-					<span><?php _e('Filter Events', 'swifty-events'); ?></span>
-					<i class="eicon-filter"></i>
+					<span><?php echo esc_html( $settings['filter_btn_text'] ); ?></span>
+					<?php \Elementor\Icons_Manager::render_icon( $settings['filter_btn_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 				</button>
 			</div>
+			<?php endif; ?>
 			
 			<!-- Backdrop for Mobile Modal -->
 			<div class="swifty-filter-backdrop"></div>
 
 			<!-- Wrapper with Sidebar -->
-			<div class="swifty-events-wrapper-with-sidebar">
+			<?php 
+			$wrapper_class = 'swifty-events-wrapper-with-sidebar';
+			if ( $settings['show_filter_sidebar'] !== 'yes' ) {
+				$wrapper_class .= ' swifty-no-sidebar';
+			}
+			?>
+			<div class="<?php echo esc_attr( $wrapper_class ); ?>">
 				
 				<!-- Sidebar Filter Area (Moved to top in HTML for Flex Order 1? No, user wants right. HTML Order: Sidebar 2nd) -->
 				<!-- However, strictly speaking, Mobile modal needs it accessible. -->
@@ -489,13 +657,14 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 
 				<?php
 			// --- SIDEBAR RENDER (Right Side) ---
-			echo '<aside class="swifty-events-filter-sidebar">';
-			
-			// Modal Close Button (Mobile Only)
-			echo '<button class="swifty-modal-close" type="button">&times;</button>';
+			if ( $settings['show_filter_sidebar'] === 'yes' ) :
+				echo '<aside class="swifty-events-filter-sidebar">';
+				
+				// Modal Close Button (Mobile Only)
+				echo '<button class="swifty-modal-close" type="button">&times;</button>';
 
-			// Start Filter Form
-			echo '<form class="swifty-filter-main-form" method="GET">';
+				// Start Filter Form
+				echo '<form class="swifty-filter-main-form" method="GET">';
 			
 			// 1. Search Bar (Top)
 			echo '<div class="swifty-filter-group swifty-search-group">';
@@ -567,7 +736,8 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			
 			echo '</form>'; // End Form
 			echo '</aside>'; // End Sidebar
-
+			endif; // End show_filter_sidebar Check
+			
 			echo '</div>'; // End Wrapper
 		?>
 		</div>
