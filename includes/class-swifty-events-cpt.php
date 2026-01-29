@@ -19,6 +19,21 @@ class Swifty_Events_CPT {
 		
 		// Force Custom Template
 		add_filter( 'template_include', array( $this, 'load_single_event_template' ) );
+		
+		// Admin Enqueue
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+	}
+	
+	public function enqueue_admin_scripts() {
+		// Enqueue Flatpickr for cute modern calendar
+		wp_enqueue_style( 'flatpickr-css', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css' );
+		// Cute theme for flatpickr (optional, or we style it manually in our js/css)
+		// wp_enqueue_style( 'flatpickr-theme', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css' ); 
+		
+		wp_enqueue_script( 'flatpickr-js', 'https://cdn.jsdelivr.net/npm/flatpickr', array(), null, true );
+		
+		wp_enqueue_style( 'swifty-admin-css', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/css/swifty-admin.css' );
+		wp_enqueue_script( 'swifty-admin-js', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/swifty-admin.js', array( 'jquery', 'flatpickr-js' ), null, true );
 	}
 
 	public function load_single_event_template( $template ) {
@@ -173,7 +188,7 @@ class Swifty_Events_CPT {
 	public function render_meta_box( $post ) {
 		// Add an nonce field so we can check for it later.
 		wp_nonce_field( 'swifty_events_save_meta_box_data', 'swifty_events_meta_box_nonce' );
-
+		
 		$event_date     = get_post_meta( $post->ID, '_swifty_event_date', true );
 		$event_location = get_post_meta( $post->ID, '_swifty_event_location', true );
 		$event_organizer = get_post_meta( $post->ID, '_swifty_event_organizer', true );
@@ -187,7 +202,7 @@ class Swifty_Events_CPT {
 
 		echo '<p>';
 		echo '<label for="swifty_event_date">' . __( 'Event Date', 'swifty-events' ) . '</label>';
-		echo '<input type="date" id="swifty_event_date" name="swifty_event_date" value="' . esc_attr( $event_date ) . '" class="widefat" />';
+		echo '<input type="text" id="swifty_event_date" name="swifty_event_date" value="' . esc_attr( $event_date ) . '" class="widefat swifty-date-picker" placeholder="' . __( 'Select Date', 'swifty-events' ) . '" />';
 		echo '</p>';
 
 		echo '<p>';
