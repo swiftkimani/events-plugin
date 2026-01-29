@@ -410,61 +410,52 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 								$enable_rsvp = get_post_meta(get_the_ID(), '_swifty_enable_rsvp', true);
 								?>
 								
-								<div class="swifty-event-item swifty-skin-<?php echo esc_attr($settings['skin']); ?> <?php echo esc_attr($enable_animations == 'yes' ? 'swifty-anim-fade-up' : ''); ?>">
+								<div class="swifty-event-item swifty-event-card swifty-skin-<?php echo esc_attr($settings['skin']); ?> <?php echo esc_attr($enable_animations == 'yes' ? 'swifty-anim-fade-up' : ''); ?>">
 									
 									<?php if (has_post_thumbnail()) : ?>
-										<div class="swifty-event-thumbnail">
-											<?php the_post_thumbnail('large'); ?>
+										<div class="swifty-event-image">
+											<a href="<?php the_permalink(); ?>">
+												<?php the_post_thumbnail('large'); ?>
+											</a>
 											<?php 
 											$categories = get_the_terms(get_the_ID(), 'event_category');
 											if ($categories && !is_wp_error($categories)) {
 												$first_cat = $categories[0];
-												echo '<span class="swifty-event-category-badge">' . esc_html($first_cat->name) . '</span>';
+												echo '<span class="swifty-event-cat-badge">' . esc_html($first_cat->name) . '</span>';
 											}
 											?>
 										</div>
 									<?php endif; ?>
 									
 									<div class="swifty-event-content">
-										<?php if ($event_date) : ?>
-											<span class="swifty-event-date">
-												<?php echo date_i18n(get_option('date_format'), strtotime($event_date)); ?>
-											</span>
-										<?php endif; ?>
+										<div class="swifty-event-meta-top">
+											<?php if ($event_date) : ?>
+												<span><i class="eicon-calendar"></i> <?php echo date_i18n(get_option('date_format'), strtotime($event_date)); ?></span>
+											<?php endif; ?>
+										</div>
 										
 										<h3 class="swifty-event-title">
-											<a href="<?php the_permalink(); ?>">
+											<a href="<?php the_permalink(); ?>" class="swifty-event-title-link">
 												<?php the_title(); ?>
 											</a>
 										</h3>
 										
-										<?php if ($event_location) : ?>
-											<p class="swifty-event-location">
-												<strong><?php _e('Location:', 'swifty-events'); ?></strong> 
-												<?php echo esc_html($event_location); ?>
-											</p>
-										<?php endif; ?>
-										
 										<div class="swifty-event-excerpt">
-											<?php echo wp_trim_words(get_the_excerpt(), $settings['excerpt_length'], '...'); ?>
+											<?php echo wp_trim_words(get_the_excerpt(), 12, '...'); ?>
 										</div>
-										
-										<?php if ($event_organizer) : ?>
-											<p class="swifty-event-organizer">
-												<strong><?php _e('Organizer:', 'swifty-events'); ?></strong> 
-												<?php echo esc_html($event_organizer); ?>
-											</p>
-										<?php endif; ?>
-										
-										<a href="<?php the_permalink(); ?>" class="swifty-btn-details">
-											<?php _e('View Details', 'swifty-events'); ?>
-										</a>
-										
-										<?php if ($enable_rsvp == 'yes') : ?>
-											<button class="swifty-btn-rsvp" data-event-id="<?php echo get_the_ID(); ?>">
-												<?php _e('Join Event', 'swifty-events'); ?>
-											</button>
-										<?php endif; ?>
+
+										<div class="swifty-event-footer">
+											<?php if ($event_date) : ?>
+												<div class="swifty-event-date-badge">
+													<span class="swifty-event-date-day"><?php echo date_i18n('d', strtotime($event_date)); ?></span>
+													<span class="swifty-event-date-month"><?php echo date_i18n('M', strtotime($event_date)); ?></span>
+												</div>
+											<?php endif; ?>
+											
+											<a href="<?php the_permalink(); ?>" class="swifty-btn-details">
+												<?php _e('View Details', 'swifty-events'); ?> <i class="eicon-arrow-right"></i>
+											</a>
+										</div>
 									</div>
 								</div>
 								
