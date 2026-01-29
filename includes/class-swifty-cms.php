@@ -13,6 +13,9 @@ class Swifty_Events_CMS {
 		// Handle Event Submission Form
 		add_action( 'admin_post_swifty_submit_event', array( $this, 'handle_event_submission' ) );
 		add_action( 'admin_post_nopriv_swifty_submit_event', array( $this, 'handle_event_submission' ) );
+		
+		// Admin Columns
+		$this->add_admin_columns();
 	}
 
 	public function handle_rsvp_submission() {
@@ -40,6 +43,28 @@ class Swifty_Events_CMS {
 			update_post_meta( $rsvp_id, '_swifty_rsvp_event_id', $event_id );
 			update_post_meta( $rsvp_id, '_swifty_rsvp_name', $name );
 			update_post_meta( $rsvp_id, '_swifty_rsvp_email', $email );
+
+			// --- SEND EMAILS ---
+			$event_title = get_the_title( $event_id );
+			$admin_email = get_option( 'admin_email' );
+			$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+			// 1. User Confirmation
+			$subject = sprintf( __( 'RSVP Confirmation: %s', 'swifty-events' ), $event_title );
+			$message = '<h3>' . __( 'You are confirmed!', 'swifty-events' ) . '</h3>';
+			$message .= '<p>' . sprintf( __( 'Hi %s,', 'swifty-events' ), $name ) . '</p>';
+			$message .= '<p>' . sprintf( __( 'Thanks for RSVPing to <strong>%s</strong>.', 'swifty-events' ), $event_title ) . '</p>';
+			$message .= '<p>' . __( 'We look forward to seeing you there.', 'swifty-events' ) . '</p>';
+			
+			wp_mail( $email, $subject, $message, $headers );
+
+			// 2. Admin Notification
+			$admin_subject = __( 'New Event RSVP', 'swifty-events' );
+			$admin_message = '<p>' . sprintf( __( 'New RSVP for <strong>%s</strong>', 'swifty-events' ), $event_title ) . '</p>';
+			$admin_message .= '<p>' . sprintf( __( 'Name: %s', 'swifty-events' ), $name ) . '</p>';
+			$admin_message .= '<p>' . sprintf( __( 'Email: %s', 'swifty-events' ), $email ) . '</p>';
+
+			wp_mail( $admin_email, $admin_subject, $admin_message, $headers );
 
 			// Redirect back with success message
 			wp_redirect( add_query_arg( 'rsvp_sent', 'true', get_permalink( $event_id ) ) );
@@ -72,6 +97,32 @@ class Swifty_Events_CMS {
 			$redirect = isset( $_POST['_wp_http_referer'] ) ? $_POST['_wp_http_referer'] : home_url();
 			wp_redirect( add_query_arg( 'event_submitted', 'true', $redirect ) );
 			exit;
+		}
+	}
+	
+	// --- ADMIN COLUMNS FOR RSVP ---
+	public function add_admin_columns() {
+		add_filter( 'manage_swifty_rsvp_posts_columns', array( $this, 'set_rsvp_columns' ) );
+		add_action( 'manage_swifty_rsvp_posts_custom_column', array( $this, 'custom_rsvp_column' ), 10, 2 );
+	}
+	
+	public function set_rsvp_columns( $columns ) {
+		$new_columns = array();
+		$new_columns['cb'] = $columns['cb'];
+		$new_columns['title'] = __( 'RSVP Info', 'swifty-events' );
+		$new_columns['rsvp_event'] = __( 'Event', 'swifty-events' ); // New Column
+		$new_columns['date'] = $columns['date'];
+		return $new_columns;
+	}
+	
+	public function custom_rsvp_column( $column, $post_id ) {
+		if ( 'rsvp_event' === $column ) {
+			$event_id = get_post_meta( $post_id, '_swifty_rsvp_event_id', true );
+			if ( $event_id ) {
+				echo '<a href="' . get_edit_post_link( $event_id ) . '"><strong>' . get_the_title( $event_id ) . '</strong></a>';
+			} else {
+				echo __( 'Unknown Event', 'swifty-events' );
+			}
 		}
 	}
 

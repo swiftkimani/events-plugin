@@ -125,7 +125,7 @@ class Swifty_Events_CPT {
 			'description'         => __( 'Post Type for Events', 'swifty-events' ),
 			'labels'              => $labels,
 			'labels'              => $labels,
-			'supports'            => array( 'title', 'thumbnail' ), // Removed 'editor'
+			'supports'            => array( 'title', 'thumbnail' ), // Reverted: Removed 'editor'
 			'taxonomies'          => array( 'category', 'post_tag' ),
 			'hierarchical'        => false,
 			'public'              => true,
@@ -214,6 +214,33 @@ class Swifty_Events_CPT {
 		echo '<option value="yearly" ' . selected( $recurrence_type, 'yearly', false ) . '>' . __( 'Yearly', 'swifty-events' ) . '</option>';
 		echo '</select>';
 		echo '</p>';
+		
+		// RSVP Checkbox UI
+		$enable_rsvp = get_post_meta( $post->ID, '_swifty_enable_rsvp', true );
+		echo '<p>';
+		echo '<label for="swifty_enable_rsvp"><input type="checkbox" id="swifty_enable_rsvp" name="swifty_enable_rsvp" value="yes" ' . checked( $enable_rsvp, 'yes', false ) . ' /> ' . __( 'Enable RSVP / Join Event Button', 'swifty-events' ) . '</label>';
+		echo '</p>';
+		
+		echo '<hr>';
+		
+		// Event Type (Physical / Virtual)
+		$event_type = get_post_meta( $post->ID, '_swifty_event_type', true );
+		if ( ! $event_type ) { $event_type = 'physical'; }
+		echo '<p>';
+		echo '<label for="swifty_event_type">' . __( 'Event Type', 'swifty-events' ) . '</label>';
+		echo '<select id="swifty_event_type" name="swifty_event_type" class="widefat">';
+		echo '<option value="physical" ' . selected( $event_type, 'physical', false ) . '>' . __( 'Physical (In-Person)', 'swifty-events' ) . '</option>';
+		echo '<option value="virtual" ' . selected( $event_type, 'virtual', false ) . '>' . __( 'Virtual (Online)', 'swifty-events' ) . '</option>';
+		echo '<option value="hybrid" ' . selected( $event_type, 'hybrid', false ) . '>' . __( 'Hybrid (Both)', 'swifty-events' ) . '</option>';
+		echo '</select>';
+		echo '</p>';
+		
+		// Virtual Link
+		$virtual_link = get_post_meta( $post->ID, '_swifty_virtual_link', true );
+		echo '<p>';
+		echo '<label for="swifty_virtual_link">' . __( 'Virtual Meeting Link (Zoom/Google Meet)', 'swifty-events' ) . '</label>';
+		echo '<input type="url" id="swifty_virtual_link" name="swifty_virtual_link" value="' . esc_attr( $virtual_link ) . '" class="widefat" placeholder="https://zoom.us/j/..." />';
+		echo '</p>';
 	}
 
 	public function save_meta_box_data( $post_id ) {
@@ -261,6 +288,21 @@ class Swifty_Events_CPT {
 		
 		if ( isset( $_POST['swifty_recurrence_type'] ) ) {
 			update_post_meta( $post_id, '_swifty_recurrence_type', sanitize_text_field( $_POST['swifty_recurrence_type'] ) );
+		}
+		
+		// RSVP Toggle
+		if ( isset( $_POST['swifty_enable_rsvp'] ) ) {
+			update_post_meta( $post_id, '_swifty_enable_rsvp', 'yes' );
+		} else {
+			update_post_meta( $post_id, '_swifty_enable_rsvp', 'no' );
+		}
+		
+		// Event Type & Link
+		if ( isset( $_POST['swifty_event_type'] ) ) {
+			update_post_meta( $post_id, '_swifty_event_type', sanitize_text_field( $_POST['swifty_event_type'] ) );
+		}
+		if ( isset( $_POST['swifty_virtual_link'] ) ) {
+			update_post_meta( $post_id, '_swifty_virtual_link', esc_url_raw( $_POST['swifty_virtual_link'] ) );
 		}
 		
 		// Save Description
