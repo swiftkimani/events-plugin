@@ -11,6 +11,15 @@
     --font-body: 'Montserrat', sans-serif;
     --container-width: 1200px;
     --radius: 16px;
+	
+	/* New Variables */
+	--swifty-primary: #0E1B2D;
+	--swifty-primary-gradient: linear-gradient(135deg, #0E1B2D 0%, #2a3c55 100%);
+	--swifty-accent: #72BE44;
+	--swifty-bg-input: #f8fafc;
+	--swifty-radius-md: 12px;
+	--swifty-font: 'Geologica', sans-serif;
+    --swifty-font-body: 'Montserrat', sans-serif;
 }
 
 .swifty-event-list {
@@ -84,6 +93,20 @@
     }
 }
 
+/* Tablet Responsiveness */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .swifty-layout-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* Force 2 columns on tablet */
+    }
+}
+
+/* Ensure images cover area well on mobile */
+@media (max-width: 500px) {
+    .swifty-skin-gh2kenya .swifty-event-thumbnail {
+        height: 180px;
+    }
+}
+
 /* Animation Classes */
 /* Animation Classes */
 .swifty-anim-fade-up {
@@ -100,38 +123,49 @@
 }
 
 @keyframes swiftyFadeUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes swiftyZoomIn {
-    0% { opacity: 0; transform: scale(0.95); }
-    100% { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-/* ===========================
-   Skin: Gh2Kenya Card (Premium)
-   =========================== */
+/* --- SKINS --- */
+
+/* 1. GH2KENYA Premium Skin */
 .swifty-skin-gh2kenya .swifty-event-item {
     background: #fff;
     border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.03);
     display: flex;
     flex-direction: column;
-    height: 100%;
 }
 
 .swifty-skin-gh2kenya .swifty-event-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(114, 190, 68, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
 }
 
 .swifty-skin-gh2kenya .swifty-event-thumbnail {
     position: relative;
-    height: 220px;
+    height: 200px; /* Fixed height for consistency */
     overflow: hidden;
 }
 
@@ -140,6 +174,7 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
+    display: block; /* Remove bottom space */
 }
 
 .swifty-skin-gh2kenya .swifty-event-item:hover .swifty-event-thumbnail img {
@@ -148,36 +183,22 @@
 
 .swifty-skin-gh2kenya .swifty-event-content {
     padding: 24px;
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
-}
-
-.swifty-skin-gh2kenya .swifty-event-date {
-    display: inline-block;
-    background: var(--color-gradient-green);
-    color: var(--color-deep-blue);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    align-self: flex-start;
-    margin-bottom: 12px;
+    gap: 12px;
+    flex-grow: 1;
 }
 
 .swifty-skin-gh2kenya .swifty-event-title {
+    margin: 0;
     font-family: var(--font-heading);
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 0 0 10px;
-    color: var(--color-deep-blue);
+    font-size: 1.25rem;
     line-height: 1.3;
+    font-weight: 700;
 }
 
 .swifty-skin-gh2kenya .swifty-event-title a {
-    color: inherit;
+    color: var(--color-deep-blue);
     text-decoration: none;
     transition: color 0.2s;
 }
@@ -186,60 +207,46 @@
     color: var(--color-primary-start);
 }
 
-.swifty-skin-gh2kenya .swifty-event-excerpt {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
+.swifty-skin-gh2kenya .swifty-event-date {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(114, 190, 68, 0.1);
+    color: var(--color-primary-start);
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    align-self: flex-start;
 }
 
 .swifty-skin-gh2kenya .swifty-btn-details {
-    margin-top: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    margin-top: auto; /* Push to bottom */
+    display: inline-block;
     padding: 12px 24px;
     background: var(--color-deep-blue);
     color: #fff;
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 13px;
-    text-transform: uppercase;
     text-decoration: none;
-    transition: all 0.3s ease;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    transition: background 0.3s;
 }
 
 .swifty-skin-gh2kenya .swifty-btn-details:hover {
-    background: var(--color-gradient-green);
-    color: var(--color-deep-blue);
-    box-shadow: 0 5px 15px rgba(114, 190, 68, 0.3);
+    background: var(--color-primary-start);
 }
 
-/* ===========================
-   Skin: Glass Minimal
-   =========================== */
-/* ===========================
-   Skin: Glass Minimal (Refined)
-   =========================== */
+/* 2. Glass Minimal Skin */
 .swifty-skin-glass .swifty-event-item {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: var(--radius);
-    padding: 24px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    padding: 30px;
     display: flex;
+    gap: 20px;
     align-items: center;
-    gap: 24px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-}
-
-.swifty-skin-glass .swifty-event-item:hover {
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 12px 40px rgba(114, 190, 68, 0.1); /* Green shadow */
-    border-color: #fff;
-    transform: translateY(-3px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
 
 .swifty-skin-glass .swifty-date-box {
@@ -247,206 +254,207 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 70px;
-    height: 70px;
-    background: var(--color-gradient-green);
-    border-radius: 12px;
+    background: var(--color-deep-blue);
     color: #fff;
-    font-family: var(--font-heading);
-    box-shadow: 0 4px 10px rgba(114, 190, 68, 0.3);
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    flex-shrink: 0;
 }
 
-.swifty-skin-glass .swifty-day { 
-    font-size: 1.6rem; 
-    font-weight: 800; 
-    line-height: 1; 
-}
-.swifty-skin-glass .swifty-month { 
-    font-size: 0.75rem; 
-    text-transform: uppercase; 
-    font-weight: 700; 
-    letter-spacing: 1px;
+.swifty-skin-glass .swifty-day {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
 }
 
-.swifty-skin-glass .swifty-content { 
-    flex-grow: 1; 
-    border-left: 1px solid rgba(0,0,0,0.05);
-    padding-left: 24px;
+.swifty-skin-glass .swifty-month {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.swifty-skin-glass .swifty-content {
+    flex-grow: 1;
 }
 
 .swifty-skin-glass .swifty-event-title {
-    margin: 0 0 8px;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--color-deep-blue);
+    font-size: 1.4rem;
+    margin-bottom: 8px;
 }
 
 .swifty-skin-glass .swifty-read-more {
-    font-size: 0.85rem;
-    font-weight: 700;
     color: var(--color-primary-start);
-    text-transform: uppercase;
+    font-weight: 700;
     text-decoration: none;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid transparent;
-    transition: border-color 0.2s;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    display: inline-block;
 }
 
-.swifty-skin-glass .swifty-read-more:hover {
-    border-color: var(--color-primary-start);
-}
-
-/* ===========================
-   Skin: Gradient Glass (New Colorful Option)
-   =========================== */
+/* 3. Highlight/Gradient Skin (replacing Neon) */
 .swifty-skin-gradient_glass .swifty-event-item {
-    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,249,255,0.9) 100%);
-    border-radius: 24px; /* More rounded */
-    padding: 0;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-    transition: all 0.4s ease;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 24px;
     border: 1px solid rgba(255,255,255,0.8);
-    display: flex;
-    flex-direction: column;
-}
-
-.swifty-skin-gradient_glass .swifty-event-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(114, 190, 68, 0.15); /* Green glow */
-    border-color: var(--color-primary-start);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 20px 20px 60px #d1d1d1, -20px -20px 60px #ffffff;
 }
 
 .swifty-skin-gradient_glass .swifty-event-thumbnail {
-    height: 220px;
+    height: 250px;
     position: relative;
-    overflow: hidden;
 }
 
 .swifty-skin-gradient_glass .swifty-event-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.swifty-skin-gradient_glass .swifty-event-item:hover .swifty-event-thumbnail img {
-    transform: scale(1.1);
+    height: 100%; width: 100%; object-fit: cover;
 }
 
 .swifty-skin-gradient_glass .swifty-event-content {
     padding: 30px;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(15px);
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.swifty-skin-gradient_glass .swifty-event-date {
-    color: #fff;
-    background: var(--color-gradient-green); /* Using theme green */
-    padding: 6px 16px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    align-self: flex-start;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 10px rgba(114, 190, 68, 0.3);
-}
-
-.swifty-skin-gradient_glass .swifty-event-title a {
-    color: var(--color-deep-blue);
-    font-size: 1.5rem;
-    font-weight: 800;
-    text-decoration: none;
-    transition: color 0.2s;
-    line-height: 1.3;
-}
-
-.swifty-skin-gradient_glass .swifty-event-title a:hover {
-    color: var(--color-primary-start);
-}
-
-.swifty-skin-gradient_glass .swifty-event-excerpt {
-    color: #666;
-    margin-top: 12px;
-    line-height: 1.6;
-}
-
-.swifty-skin-gradient_glass .swifty-btn-details {
-    margin-top: auto;
-    background: var(--color-deep-blue); /* Theme Blue */
-    color: #fff;
-    padding: 12px 24px;
-    border-radius: 50px;
-    text-align: center;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.swifty-skin-gradient_glass .swifty-btn-details:hover {
-    background: transparent;
-    color: var(--color-deep-blue);
-    border-color: var(--color-deep-blue);
-    transform: scale(1.02);
+    background: rgba(255,255,255,0.9);
+    position: relative;
+    top: -20px;
+    margin: 0 20px -20px 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 20px; /* Fix negative margin cutoff */
 }
 
 /* ===========================
-   Modern Sidebar Layout & Filter
+   SIDEBAR & FILTER LAYOUT - UPDATED FOR RIGHT SIDEBAR
    =========================== */
-
-/* Variables for Modern Theme */
-:root {
-    --swifty-primary: #0E1B2D;
-    --swifty-primary-gradient: linear-gradient(135deg, #0E1B2D 0%, #1c3a5e 100%);
-    --swifty-accent: #3b82f6; /* Bright blue for focus/active */
-    --swifty-bg-input: #f3f4f6;
-    --swifty-shadow-soft: 0 10px 30px rgba(14, 27, 45, 0.06);
-    --swifty-shadow-hover: 0 20px 40px rgba(14, 27, 45, 0.12);
-    --swifty-radius-lg: 24px;
-    --swifty-radius-md: 16px;
-    --swifty-font: 'Montserrat', sans-serif;
-}
-
 .swifty-events-wrapper-with-sidebar {
     display: flex;
     gap: 40px;
     align-items: flex-start;
+    position: relative;
+    flex-wrap: wrap; /* Allow wrap on mobile */
 }
 
+/* Main Content Area */
 .swifty-events-main-content {
-    flex-grow: 1;
-    width: 100%;
+    flex: 1 1 auto; /* Grow, Shrink, Auto Basis */
+    width: 0; /* Standard flex fix for nested constraints */
+    min-width: 0; /* Prevent overflow */
+}
+
+/* Sidebar Area - Updated for right side sticky */
+.swifty-events-filter-sidebar {
+    width: 320px; /* Slightly wider for better breathing room */
+    flex: 0 0 320px; /* No grow, no shrink, fixed basis */
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.04);
+    box-sizing: border-box;
+}
+
+/* Mobile & Tablet Logic (Default or < 992px) */
+/* By default, we let it wrap. But strict column is safer for layout stability. */
+.swifty-events-wrapper-with-sidebar {
+    flex-direction: column; /* Default: Stacked */
 }
 
 .swifty-events-filter-sidebar {
-    width: 320px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 40px;
-    background: #fff;
-    padding: 32px;
-    border-radius: var(--swifty-radius-lg);
-    box-shadow: var(--swifty-shadow-soft);
-    border: 1px solid rgba(255, 255, 255, 0.5); /* Subtle white border */
-    transition: box-shadow 0.3s ease;
+    width: 100%; /* Full width on mobile/tablet when displayed inline or in modal */
+    flex: none;
+    order: 2; /* Main content first, Sidebar second (if displayed inline) */
+    position: static; /* Remove sticky on mobile */
 }
 
-.swifty-events-filter-sidebar:hover {
-    box-shadow: var(--swifty-shadow-hover);
+/* Desktop Logic (>= 992px) - UPDATED FOR RIGHT SIDEBAR */
+@media (min-width: 992px) {
+    .swifty-events-wrapper-with-sidebar {
+        flex-direction: row !important; /* Force Row */
+        flex-wrap: nowrap !important;   /* No Wrapping */
+        align-items: flex-start;
+    }
+    
+    /* Main Content on the left */
+    .swifty-events-main-content {
+        order: 1 !important;
+        flex: 1 1 auto !important;
+        width: 0 !important; /* Force fluid width */
+        margin-right: 0; /* Remove any right margin */
+    }
+    
+    /* Sidebar on the right with sticky behavior */
+    .swifty-events-filter-sidebar {
+        width: 320px !important;
+        flex: 0 0 320px !important;
+        order: 2 !important; /* Force Right */
+        
+        /* Sticky positioning */
+        position: -webkit-sticky;
+        position: sticky;
+        top: 20px; /* Distance from top when scrolling */
+        align-self: flex-start;
+        
+        /* Ensure it doesn't exceed viewport height */
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        
+        /* Visual enhancements */
+        z-index: 10;
+        margin-left: 0;
+    }
+    
+    /* Optional: Add scrollbar styling for the sidebar */
+    .swifty-events-filter-sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .swifty-events-filter-sidebar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .swifty-events-filter-sidebar::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    
+    .swifty-events-filter-sidebar::-webkit-scrollbar-thumb:hover {
+        background: #a1a1a1;
+    }
 }
 
-/* Override Grid */
-.swifty-events-wrapper-with-sidebar .swifty-layout-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 30px;
+/* Additional fix for tablet view (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .swifty-events-wrapper-with-sidebar {
+        flex-direction: column;
+    }
+    
+    .swifty-events-filter-sidebar {
+        width: 100%;
+        position: static;
+        transform: none;
+        height: auto;
+        border-radius: var(--radius);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        padding: 24px;
+    }
+    
+    /* Hide mobile trigger on tablet since sidebar is visible */
+    .swifty-mobile-filter-trigger-wrapper {
+        display: none;
+    }
+    
+    /* Show sidebar inline on tablet */
+    .swifty-events-filter-sidebar {
+        position: relative !important;
+        transform: none !important;
+        display: block !important;
+    }
 }
 
 /* ===========================
-   Premium Filter Form
+   FILTER FORM STYLES
    =========================== */
 .swifty-filter-group {
     margin-bottom: 28px;
@@ -474,7 +482,7 @@
     border: none;
     background: var(--swifty-bg-input);
     border-radius: var(--swifty-radius-md);
-    font-family: var(--swifty-font);
+    font-family: var(--swifty-font-body);
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--swifty-primary);
@@ -538,7 +546,6 @@
 
 /* Custom Select Arrow */
 .swifty-select-wrapper::after {
-    content: '\e8ad'; /* Elementor arrow or similar? Using CSS arrow for safety */
     content: '';
     width: 8px;
     height: 8px;
@@ -551,6 +558,7 @@
     pointer-events: none;
     opacity: 0.6;
 }
+div.swifty-select-wrapper { position: relative; } /* Ensure wrapper is relative */
 
 /* Action Buttons */
 .swifty-filter-actions {
@@ -668,7 +676,6 @@
     .swifty-mobile-filter-trigger-wrapper {
         display: block;
         margin-bottom: 24px;
-        /* Removed sticky positioning per user request */
         position: relative; 
         z-index: 10;
     }
@@ -698,321 +705,142 @@
     .swifty-mobile-filter-btn i {
         font-size: 1.2rem;
         background: rgba(255,255,255,0.2);
-        width: 32px; height: 32px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 50%;
+        padding: 8px;
+        border-radius: 8px;
     }
 
-    /* Bottom Sheet Modal */
+    /* Modal Styling for Mobile */
     .swifty-events-filter-sidebar {
         position: fixed;
         bottom: 0;
         left: 0;
-        right: 0;
-        top: auto; /* Not full height */
         width: 100%;
-        max-width: 100%;
-        height: auto;
-        max-height: 85vh; /* Keep some space at top */
-        z-index: 9999;
-        
+        height: 85vh; /* Bottom sheet height */
         background: #fff;
-        border-radius: 24px 24px 0 0; /* Round top only */
-        padding: 50px 24px 30px 24px; /* Increased top padding */
-        
+        z-index: 9999;
+        border-radius: 24px 24px 0 0;
+        padding: 32px 24px;
         box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+        transform: translateY(110%); /* Hidden by default */
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         overflow-y: auto;
-        
-        transform: translateY(100%); /* Slide UP */
-        transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
-        
-        order: unset;
-        margin-bottom: 0;
-        border: none;
     }
 
-    /* Modal Active State */
-    .swifty-filter-modal-active .swifty-events-filter-sidebar {
+    /* Class added by JS (Backdrop OnClick or Button OnClick) */
+    .swifty-events-wrapper-with-sidebar.swifty-filter-modal-active .swifty-events-filter-sidebar {
         transform: translateY(0);
-        display: block;
     }
-
-    /* Handle Bar */
-    .swifty-events-filter-sidebar::before {
-        content: '';
+    
+    /* Close Button (X) */
+    .swifty-modal-close {
+        display: flex;
         position: absolute;
         top: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 5px;
-        background: #e2e8f0;
-        border-radius: 10px;
+        right: 12px;
+        background: #fff; /* White bg to cover anything behind */
+        border: 1px solid #eee;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 24px;
+        color: #333;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10005; /* Super high to sit on top of everything */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Pop out */
     }
-
-    /* Backdrop (Real Element Logic) */
+    
+    /* Backdrop */
     .swifty-filter-backdrop {
         position: fixed;
-        inset: 0;
-        background: rgba(14, 27, 45, 0.6);
-        backdrop-filter: blur(4px);
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
         z-index: 9998;
         opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s, visibility 0.3s;
-        cursor: pointer; /* Indicates clickable */
+        pointer-events: none;
+        transition: opacity 0.3s;
+        backdrop-filter: blur(2px);
     }
-
-    .swifty-filter-modal-active .swifty-filter-backdrop {
+    
+    .swifty-events-wrapper-with-sidebar.swifty-filter-modal-active .swifty-filter-backdrop {
         opacity: 1;
-        visibility: visible;
-    }
-    
-    /* Deprecate old pseudo backdrop if exists to prevent double overlay */
-    .swifty-filter-modal-active::before {
-        display: none;
-    }
-    
-    /* Close Button - Enhanced Visibility */
-    .swifty-modal-close {
-        display: block;
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: #e74c3c; /* Red background for visibility */
-        width: 40px; height: 40px;
-        border-radius: 50%;
-        border: 2px solid #fff;
-        font-size: 1.8rem;
-        color: #fff;
-        display: flex; align-items: center; justify-content: center;
-        padding-bottom: 4px; /* visual center fix */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        z-index: 10001; /* Higher than backdrop (9998) and sidebar (9999) if needed */
-        cursor: pointer;
-    }
-    
-    /* Adjust sidebar padding to ensure Close Button doesn't overlap search */
-    .swifty-events-filter-sidebar {
-        padding-top: 70px; /* More space at top for X button row */
-        z-index: 9999;
+        pointer-events: auto;
     }
 }
 
-
-/* ===========================
-   Single Event Page Styles
-   =========================== */
-
-.swifty-single-event-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 50px;
-    align-items: start;
-    margin-top: 20px;
+/* --- FRAMER-LIKE ANIMATIONS --- */
+.swifty-framer-animation .swifty-event-item {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* --- Left Main Content --- */
-.swifty-single-main {
-    width: 100%;
+.swifty-framer-animation .swifty-event-item:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
 }
 
-/* Back Buttons */
-.swifty-back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--swifty-font);
-    font-weight: 600;
-    color: #666;
-    text-decoration: none;
-    transition: all 0.2s;
+.swifty-framer-animation .swifty-btn-details {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.swifty-back-btn:hover {
-    color: var(--swifty-primary);
-    transform: translateX(-5px);
+.swifty-framer-animation .swifty-event-item:hover .swifty-btn-details {
+    transform: scale(1.05);
 }
 
-.swifty-back-top { margin-bottom: 24px; }
-.swifty-back-bottom { margin-top: 40px; display: inline-flex; }
-
-/* Hero Image */
-.swifty-single-hero {
-    border-radius: 24px;
-    overflow: hidden;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
-
-.swifty-single-hero img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-/* Title & Meta */
-.swifty-single-title {
-    font-family: var(--swifty-font);
-    font-size: 2.5rem;
-    color: var(--swifty-primary);
-    margin-bottom: 16px;
-    line-height: 1.2;
-}
-
-.swifty-single-meta-row {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 30px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid #eee;
-}
-
-.swifty-meta-item {
-    font-family: var(--swifty-font);
-    font-size: 0.95rem;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.swifty-meta-item i {
-    color: var(--swifty-accent);
-}
-
-/* Typography */
-.swifty-single-content {
-    font-family: 'Open Sans', sans-serif; /* Readable body font */
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: #333;
-}
-
-.swifty-single-content p { margin-bottom: 20px; }
-
-/* --- RSVP Form --- */
-.swifty-rsvp-section {
+/* --- PAGINATION STYLES --- */
+.swifty-pagination {
     margin-top: 40px;
-    background: #fdfdfd;
-    padding: 30px;
-    border-radius: 20px;
-    border: 1px solid #eee;
-}
-
-.swifty-rsvp-form-styled .swifty-form-row {
-    margin-bottom: 15px;
-}
-
-.swifty-rsvp-form-styled input {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    font-size: 1rem;
-}
-
-.swifty-btn-rsvp {
-    background: var(--swifty-primary-gradient);
-    color: #fff;
-    width: 100%;
-    margin-top: 10px;
-}
-
-/* --- Right Sidebar (Sticky) --- */
-.swifty-sidebar-inner {
-    position: sticky;
-    top: 30px; /* Offset from header */
-}
-
-/* Info Card */
-.swifty-info-card {
-    background: #fff;
-    padding: 30px;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    border: 1px solid #f0f0f0;
-    margin-bottom: 30px;
-}
-
-.swifty-info-card h3,
-.swifty-related-events h3 {
-    font-family: var(--swifty-font);
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    color: var(--swifty-primary);
-}
-
-.swifty-info-list {
-    list-style: none;
-    padding: 0; margin: 0;
-}
-
-.swifty-info-list li {
-    margin-bottom: 12px;
-    font-size: 0.95rem;
-    color: #555;
-}
-
-.swifty-btn-map-link {
-    display: block;
-    margin-top: 15px;
-    text-align: center;
-    color: var(--swifty-accent);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-/* Related Events */
-.swifty-related-item { /* Grid items inside sidebar could display vertical list */
+    margin-bottom: 40px;
     display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
+    justify-content: center;
+    gap: 8px;
+}
+
+.swifty-pagination ul.page-numbers {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    gap: 8px;
     align-items: center;
 }
 
-.swifty-related-thumb {
-    width: 80px;
-    height: 60px;
-    border-radius: 8px;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.swifty-related-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.swifty-related-title {
-    font-size: 0.9rem;
-    margin: 0 0 5px 0;
-    line-height: 1.3;
-    font-family: var(--swifty-font);
+.swifty-pagination .page-numbers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #fff;
     color: var(--swifty-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-.swifty-related-date {
-    font-size: 0.8rem;
-    color: #888;
+.swifty-pagination .page-numbers:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
 }
 
-.swifty-related-item a { text-decoration: none; }
+.swifty-pagination .page-numbers.current {
+    background: var(--swifty-primary);
+    background: linear-gradient(135deg, #0E1B2D 0%, #1a3c61 100%);
+    color: #fff;
+    transform: scale(1.1);
+}
 
-/* Responsive Single */
-@media (max-width: 991px) {
-    .swifty-single-event-wrapper {
-        grid-template-columns: 1fr; /* Stack */
-    }
-    
-    .swifty-sidebar-inner {
-        position: static; /* No sticky on mobile usually better unless needed */
-    }
-    
-    .swifty-info-card {
-        margin-top: 0;
-    }
+/* Pill Style */
+.swifty-pagination-pill .page-numbers {
+    border-radius: 50px;
+    width: auto;
+    padding: 0 20px;
+}
+
+/* Top/Bottom Specifics */
+.swifty-pagination-top {
+    margin-top: 0;
+    margin-bottom: 30px;
 }

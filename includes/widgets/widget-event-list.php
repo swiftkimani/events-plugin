@@ -168,6 +168,81 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				'separator'    => 'before',
 			)
 		);
+		
+		// --- PAGINATION CONTROLS ---
+		$this->add_control(
+			'swifty_pagination_enable',
+			array(
+				'label'        => __( 'Enable Pagination', 'swifty-events' ),
+				'type'         => \Elementor\Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Yes', 'swifty-events' ),
+				'label_off'    => __( 'No', 'swifty-events' ),
+				'return_value' => 'yes',
+				'default'      => 'yes',
+				'separator'    => 'before',
+			)
+		);
+		
+		$this->add_control(
+			'swifty_pagination_position',
+			array(
+				'label' => __( 'Pagination Position', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'default' => 'bottom',
+				'options' => array(
+					'top' => __( 'Top', 'swifty-events' ),
+					'bottom' => __( 'Bottom', 'swifty-events' ),
+					'both' => __( 'Both (Top & Bottom)', 'swifty-events' ),
+				),
+				'condition' => array(
+					'swifty_pagination_enable' => 'yes',
+				),
+			)
+		);
+		
+		$this->add_control(
+			'swifty_pagination_style',
+			array(
+				'label' => __( 'Pagination Style', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'default' => 'numbers',
+				'options' => array(
+					'numbers' => __( 'Standard Numbers', 'swifty-events' ),
+					'pill' => __( 'Modern Pill', 'swifty-events' ),
+					'prevnext' => __( 'Prev/Next Only', 'swifty-events' ),
+				),
+				'condition' => array(
+					'swifty_pagination_enable' => 'yes',
+				),
+			)
+		);
+		
+		// --- ANIMATION CONTROLS ---
+		$this->add_control(
+			'swifty_framer_animation',
+			array(
+				'label'        => __( 'Framer-like Animations', 'swifty-events' ),
+				'type'         => \Elementor\Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Enabled', 'swifty-events' ),
+				'return_value' => 'yes',
+				'default'      => 'yes',
+				'description'  => __( 'Enables smooth, spring-like entry and hover effects.', 'swifty-events' ),
+			)
+		);
+		
+		$this->add_control(
+			'animation_stagger',
+			array(
+				'label' => __( 'Stagger Delay (ms)', 'swifty-events' ),
+				'type' => \Elementor\Controls_Manager::NUMBER,
+				'default' => 100,
+				'min' => 0,
+				'max' => 500,
+				'condition' => array(
+					'swifty_framer_animation' => 'yes',
+				),
+			)
+		);
 
 		$this->end_controls_section();
 		
@@ -311,11 +386,102 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			echo '</button>';
 			echo '</div>';
 			
-			// --- BACKDROP (Click to Close) ---
-			echo '<div class="swifty-filter-backdrop" onclick="document.querySelector(\'.swifty-events-wrapper-with-sidebar\').classList.remove(\'swifty-filter-modal-active\');"></div>';
-			
-			// --- MAIN CONTENT (First in HTML for SEO/flow, CSS will order it) ---
 			echo '<div class="swifty-events-main-content">';
+		}
+
+		// Pagination Setup
+		$paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+		if ( isset( $_GET['swifty_page'] ) ) {
+			$paged = intval( $_GET['swifty_page'] );
+		}
+
+		$args = array(
+			'post_type'      => 'event',
+			'post_status'    => array( 'publish', 'future' ),
+			'posts_per_page' => $settings['posts_per_page'],
+			'paged'          => $paged,
+		);
+		
+		// 1. Initial Widget Settings Filter
+		if ( ! empty( $settings['category_filter'] ) ) {
+			$args['tax_query'] = array(
+				array(
+					'taxonomy' => 'event_category',
+					'field'    => 'term_id',
+					'terms'    => $settings['category_filter'],
+				),
+			);
+		}
+
+		// 2. Override/Append with Sidebar Filter
+		// TAXONOMY FILTER
+		if ( ! empty( $filter_cat ) ) {
+			if ( empty( $args['tax_query'] ) ) {
+				$args['tax_query'] = array();
+			} else {
+				$args['tax_query']['relation'] = 'AND';
+			}
+
+			$args['tax_query'][] = array(
+				'taxonomy' => 'event_category',
+				'field'    => 'slug',
+				'terms'    => $filter_cat,
+			);
+		}
+
+		// SEARCH FILTER
+		if ( ! empty( $filter_search ) ) {
+			$args['s'] = $filter_search;
+		}
+		
+		// DATE FILTER LOGIC
+		if ( empty( $args['meta_query'] ) ) {
+			$args['meta_query'] = array( 'relation' => 'AND' );
+		}
+		
+		// ... (Date filters handled by reuse of existing logic if possible, or just re-add)
+		// Re-implementing date filter logic here correctly since we replaced the block
+		
+		// From Date
+		if ( ! empty( $filter_date_from ) ) {
+			$args['meta_query'][] = array(
+				'key'     => '_swifty_event_date',
+				'value'   => $filter_date_from,
+				'compare' => '>=',
+				'type'    => 'DATE',
+			);
+		}
+
+		// To Date
+		if ( ! empty( $filter_date_to ) ) {
+			$args['meta_query'][] = array(
+				'key'     => '_swifty_event_date',
+				'value'   => $filter_date_to,
+				'compare' => '<=',
+				'type'    => 'DATE',
+			);
+		}
+
+		// Order by date default
+		if ( empty( $args['orderby'] ) ) {
+			$args['orderby'] = 'meta_value';
+			$args['meta_key'] = '_swifty_event_date';
+			$args['order'] = 'ASC';
+		}
+
+		$query = new \WP_Query( $args );
+		
+		// Framer Animation Wrapper Class
+		$wrapper_classes = 'swifty-event-list-wrapper';
+		if ( 'yes' === $settings['swifty_framer_animation'] ) {
+			$wrapper_classes .= ' swifty-framer-animation';
+		}
+		
+		echo '<div class="' . esc_attr( $wrapper_classes ) . '">';
+		
+		// --- PAGINATION TOP ---
+		if ( 'yes' === $settings['swifty_pagination_enable'] && in_array( $settings['swifty_pagination_position'], array( 'top', 'both' ) ) ) {
+			$this->render_pagination( $query, $settings, 'top' );
 		}
 
 		if ( $query->have_posts() ) {
@@ -327,7 +493,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 				$anim_class = 'swifty-anim-zoom-in';
 			}
 
-			// Add debug attribute
+			// Add layout attributes
 			$layout_class = 'swifty-layout-' . esc_attr( $settings['layout_mode'] );
 			if ( 'flex' === $settings['layout_mode'] ) {
 				$layout_class .= ' swifty-flex-' . esc_attr( $settings['flex_direction'] );
@@ -410,13 +576,18 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			echo '<div class="swifty-no-events" style="padding: 20px; text-align: center; color: #555; border: 1px dashed #ccc;">' . __( 'No events found.', 'swifty-events' ) . '</div>';
 		}
 
+		// --- PAGINATION BOTTOM ---
+		if ( 'yes' === $settings['swifty_pagination_enable'] && in_array( $settings['swifty_pagination_position'], array( 'bottom', 'both' ) ) ) {
+			$this->render_pagination( $query, $settings, 'bottom' );
+		}
+
 		if ( $show_sidebar ) {
 			echo '</div>'; // End Main Content
 			
 			// --- SIDEBAR RENDER (Right Side) ---
 			echo '<aside class="swifty-events-filter-sidebar">';
 			
-			// Modal Close Button (Mobile Only) - Moved logic to Backdrop, but keep X for usability
+			// Modal Close Button (Mobile Only)
 			echo '<button class="swifty-modal-close" onclick="document.querySelector(\'.swifty-events-wrapper-with-sidebar\').classList.remove(\'swifty-filter-modal-active\');">&times;</button>';
 
 			// Start Filter Form
@@ -426,12 +597,12 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			echo '<div class="swifty-filter-group swifty-search-group">';
 			echo '<div class="swifty-search-wrapper">';
 			echo '<input type="text" name="swifty_search" class="swifty-search-input" placeholder="' . __( 'Search events...', 'swifty-events' ) . '" value="' . esc_attr( $filter_search ) . '">';
-			echo '<button type="submit" class="swifty-search-icon-btn"><i class="eicon-search"></i></button>'; // Assuming elementor icon available or use SVG
+			echo '<button type="submit" class="swifty-search-icon-btn"><i class="eicon-search"></i></button>';
 			echo '</div>';
 			echo '</div>';
 
-			// 2. Upcoming Quick Button (Moved here)
-			echo '<div class="swifty-quick-actions" style="margin-bottom: 28px;">'; // Inline style for spacing, or add to CSS
+			// 2. Upcoming Quick Button
+			echo '<div class="swifty-quick-actions" style="margin-bottom: 28px;">';
 			echo '<button type="submit" name="swifty_action" value="upcoming" class="swifty-btn swifty-btn-upcoming ' . ( 'upcoming' === $filter_action ? 'active' : '' ) . '">' . __( 'Upcoming Events', 'swifty-events' ) . '</button>';
 			echo '</div>';
 
@@ -455,7 +626,7 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			echo '</div>';
 			echo '</div>';
 
-			// 4. Date Picker Range (From & To)
+			// 4. Date Picker Range
 			echo '<div class="swifty-filter-group">';
 			echo '<label class="swifty-filter-label">' . __( 'Date From', 'swifty-events' ) . '</label>';
 			echo '<input type="date" name="swifty_date_from" class="swifty-form-date" min="2020-01-01" value="' . esc_attr( $filter_date_from ) . '" style="margin-bottom: 10px;">';
@@ -467,8 +638,8 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			echo '<div class="swifty-filter-actions">';
 			echo '<button type="submit" class="swifty-btn swifty-btn-apply">' . __( 'Apply Filter', 'swifty-events' ) . '</button>';
 			
-			// Clear Button (Link)
-			$reset_url = remove_query_arg( array( 'swifty_cat', 'swifty_search', 'swifty_date_from', 'swifty_date_to', 'swifty_action' ) );
+			// Clear Button
+			$reset_url = remove_query_arg( array( 'swifty_cat', 'swifty_search', 'swifty_date_from', 'swifty_date_to', 'swifty_action', 'swifty_page' ) ); // Added swifty_page removal
 			echo '<a href="' . esc_url( $reset_url ) . '" class="swifty-btn swifty-btn-clear">' . __( 'Clear Filter', 'swifty-events' ) . '</a>';
 			echo '</div>';
 			
@@ -478,5 +649,37 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			echo '</div>'; // End Wrapper
 		}
 	}
-
+	
+	protected function render_pagination( $query, $settings, $context ) {
+		$total_pages = $query->max_num_pages;
+		if ( $total_pages < 2 ) { return; }
+		
+		$current_page = max( 1, get_query_var( 'paged' ), isset( $_GET['swifty_page'] ) ? intval( $_GET['swifty_page'] ) : 1 );
+		
+		$style_class = 'swifty-pagination-' . $settings['swifty_pagination_style'];
+		$pos_class = 'swifty-pagination-' . $context;
+		
+		echo '<div class="swifty-pagination ' . esc_attr( $style_class ) . ' ' . esc_attr( $pos_class ) . '">';
+		
+		$big = 999999999; // need an unlikely integer
+		$args = array(
+			'base' => add_query_arg( 'swifty_page', '%#%' ),
+			'format' => '?swifty_page=%#%',
+			'current' => $current_page,
+			'total' => $total_pages,
+			'prev_text' => '<i class="eicon-chevron-left"></i>',
+			'next_text' => '<i class="eicon-chevron-right"></i>',
+			'type' => 'list',
+		);
+		
+		if ( 'prevnext' === $settings['swifty_pagination_style'] ) {
+			$args['mid_size'] = 0;
+			$args['end_size'] = 0;
+			$args['prev_next'] = true;
+		}
+		
+		echo paginate_links( $args );
+		
+		echo '</div>';
+	}
 }
