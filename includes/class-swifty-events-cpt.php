@@ -16,6 +16,19 @@ class Swifty_Events_CPT {
 		add_action( 'init', array( $this, 'register_taxonomy' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_meta_box_data' ) );
+		
+		// Force Custom Template
+		add_filter( 'template_include', array( $this, 'load_single_event_template' ) );
+	}
+
+	public function load_single_event_template( $template ) {
+		if ( is_singular( 'event' ) ) {
+			$plugin_template = plugin_dir_path( dirname( __FILE__ ) ) . 'templates/single-event.php';
+			if ( file_exists( $plugin_template ) ) {
+				return $plugin_template;
+			}
+		}
+		return $template;
 	}
 
 	public function register_taxonomy() {
