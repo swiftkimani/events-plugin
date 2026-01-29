@@ -591,58 +591,77 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 	private function render_frontend_scripts() {
 		?>
 		<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			const widgetWrapper = document.querySelector('[data-widget-id="<?php echo esc_js($this->get_id()); ?>"]');
-			if (!widgetWrapper) return;
-			
-			const mainWrapper = widgetWrapper.querySelector('.swifty-events-wrapper-with-sidebar');
-			const sidebar = widgetWrapper.querySelector('.swifty-events-filter-sidebar');
-			const mobileBtn = widgetWrapper.querySelector('.swifty-mobile-filter-btn');
-			const closeBtn = widgetWrapper.querySelector('.swifty-modal-close');
-			const backdrop = widgetWrapper.querySelector('.swifty-filter-backdrop'); // Assuming this exists outside wrapper in PHP, check placement
-			
-			// Modal Logic
-			function openModal() {
-				if(mainWrapper) mainWrapper.classList.add('swifty-filter-modal-active');
-				document.body.style.overflow = 'hidden';
-			}
-			
-			function closeModal() {
-				if(mainWrapper) mainWrapper.classList.remove('swifty-filter-modal-active');
-				document.body.style.overflow = '';
-			}
-			
-			if (mobileBtn) mobileBtn.addEventListener('click', openModal);
-			if (closeBtn) closeBtn.addEventListener('click', closeModal);
-			if (backdrop) backdrop.addEventListener('click', closeModal);
-			
-			// Clear Filters
-			const clearBtn = widgetWrapper.querySelector('.swifty-btn-clear');
-			if (clearBtn) {
-				clearBtn.addEventListener('click', function() {
-					// Reload page without query params
-					window.location.href = window.location.href.split('?')[0];
-				});
-			}
+		(function() {
+			const initWidget = function() {
+				const widgetWrapper = document.querySelector('[data-widget-id="<?php echo esc_js($this->get_id()); ?>"]');
+				if (!widgetWrapper) return;
+				
+				const mainWrapper = widgetWrapper.querySelector('.swifty-events-wrapper-with-sidebar');
+				const mobileBtn = widgetWrapper.querySelector('.swifty-mobile-filter-btn');
+				const closeBtn = widgetWrapper.querySelector('.swifty-modal-close');
+				const backdrop = widgetWrapper.querySelector('.swifty-filter-backdrop');
+				
+				// Modal Logic
+				function openModal() {
+					if(mainWrapper) mainWrapper.classList.add('swifty-filter-modal-active');
+					document.body.style.overflow = 'hidden';
+				}
+				
+				function closeModal() {
+					if(mainWrapper) mainWrapper.classList.remove('swifty-filter-modal-active');
+					document.body.style.overflow = '';
+				}
+				
+				// Remove existing listeners to avoid duplicates if re-init (though this is scoped)
+				// Since we use anonymous functions for re-attach, we just add them. Sould be fine as init runs once per instance script execution.
+				
+				if (mobileBtn) {
+					mobileBtn.removeEventListener('click', openModal); // Safety
+					mobileBtn.addEventListener('click', openModal);
+				}
+				
+				if (closeBtn) {
+					closeBtn.removeEventListener('click', closeModal);
+					closeBtn.addEventListener('click', closeModal);
+				}
+				
+				if (backdrop) {
+					backdrop.removeEventListener('click', closeModal);
+					backdrop.addEventListener('click', closeModal);
+				}
+				
+				// Clear Filters
+				const clearBtn = widgetWrapper.querySelector('.swifty-btn-clear');
+				if (clearBtn) {
+					clearBtn.addEventListener('click', function() {
+						window.location.href = window.location.href.split('?')[0];
+					});
+				}
 
-			// Upcoming Toggle logic
-			const upcomingBtn = widgetWrapper.querySelector('.swifty-btn-upcoming');
-			const upcomingInput = widgetWrapper.querySelector('.swifty-upcoming-input');
-			if (upcomingBtn && upcomingInput) {
-				upcomingBtn.addEventListener('click', function() {
-					if (upcomingInput.value === 'true') {
-						upcomingInput.value = '';
-						this.classList.remove('active');
-					} else {
-						upcomingInput.value = 'true';
-						this.classList.add('active');
-					}
-					// Auto submit? Or wait for Apply? User flow suggests waiting for Apply usually, but toggle buttons often auto-trigger. 
-					// Let's stick to manual apply for consistency with other filters, or users get confused if page reloads immediately.
-					// User logic seemed to want it to be a button.
-				});
+				// Upcoming Toggle logic
+				const upcomingBtn = widgetWrapper.querySelector('.swifty-btn-upcoming');
+				const upcomingInput = widgetWrapper.querySelector('.swifty-upcoming-input');
+				if (upcomingBtn && upcomingInput) {
+					upcomingBtn.addEventListener('click', function() {
+						const isNowActive = !this.classList.contains('active');
+						if (isNowActive) {
+							upcomingInput.value = 'true';
+							this.classList.add('active');
+						} else {
+							upcomingInput.value = '';
+							this.classList.remove('active');
+						}
+					});
+				}
+			};
+
+			// Run init
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', initWidget);
+			} else {
+				initWidget();
 			}
-		});
+		})();
 		</script>
 		<?php
 	}
