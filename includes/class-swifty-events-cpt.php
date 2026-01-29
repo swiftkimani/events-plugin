@@ -27,7 +27,12 @@ class Swifty_Events_CPT {
 			if ( file_exists( $plugin_template ) ) {
 				return $plugin_template;
 			}
-		}
+		} elseif ( is_post_type_archive( 'event' ) || is_tax( 'event_category' ) ) {
+            $archive_template = plugin_dir_path( dirname( __FILE__ ) ) . 'templates/archive-event.php';
+            if ( file_exists( $archive_template ) ) {
+                return $archive_template;
+            }
+        }
 		return $template;
 	}
 

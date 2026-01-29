@@ -271,324 +271,226 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
-
-		// Handle Filtering from $_GET
-		$filter_cat = isset( $_GET['swifty_cat'] ) ? sanitize_text_field( $_GET['swifty_cat'] ) : '';
-		$filter_search = isset( $_GET['swifty_search'] ) ? sanitize_text_field( $_GET['swifty_search'] ) : '';
 		
-		// Date Range Filters
-		$filter_date_from = isset( $_GET['swifty_date_from'] ) ? sanitize_text_field( $_GET['swifty_date_from'] ) : '';
-		$filter_date_to   = isset( $_GET['swifty_date_to'] ) ? sanitize_text_field( $_GET['swifty_date_to'] ) : '';
-		
-		$filter_action = isset( $_GET['swifty_action'] ) ? sanitize_text_field( $_GET['swifty_action'] ) : ''; // For quick buttons like "Upcoming"
-
-		$args = array(
-			'post_type'      => 'event',
-			'post_status'    => array( 'publish', 'future' ),
-			'posts_per_page' => $settings['posts_per_page'],
-		);
-		
-		// 1. Initial Widget Settings Filter
-		if ( ! empty( $settings['category_filter'] ) ) {
-			$args['tax_query'] = array(
-				array(
-					'taxonomy' => 'event_category',
-					'field'    => 'term_id',
-					'terms'    => $settings['category_filter'],
-				),
-			);
-		}
-
-		// 2. Override/Append with Sidebar Filter
-		// TAXONOMY FILTER
-		if ( ! empty( $filter_cat ) ) {
-			if ( empty( $args['tax_query'] ) ) {
-				$args['tax_query'] = array();
-			} else {
-				$args['tax_query']['relation'] = 'AND';
-			}
-
-			$args['tax_query'][] = array(
-				'taxonomy' => 'event_category',
-				'field'    => 'slug',
-				'terms'    => $filter_cat,
-			);
-		}
-
-		// SEARCH FILTER
-		if ( ! empty( $filter_search ) ) {
-			$args['s'] = $filter_search;
-		}
-		
-		// DATE FILTER LOGIC
-		if ( empty( $args['meta_query'] ) ) {
-			$args['meta_query'] = array( 'relation' => 'AND' );
-		}
-
-		if ( 'upcoming' === $filter_action ) {
-			// Quick Action: Upcoming overrides custom dates
-			$today = date( 'Y-m-d' );
-			$args['meta_query'][] = array(
-				'key'     => '_swifty_event_date',
-				'value'   => $today,
-				'compare' => '>=',
-				'type'    => 'DATE',
-			);
-			$args['orderby'] = 'meta_value';
-			$args['meta_key'] = '_swifty_event_date';
-			$args['order'] = 'ASC';
-			
-			// Clear custom inputs for UI consistency if desired, or keep them to show what "Upcoming" means? 
-			// Usually "Upcoming" is a preset. We'll leave inputs empty in form if action is set, handled in form output.
-		} else {
-			// Handle Custom Date Range
-			
-			// From Date
-			if ( ! empty( $filter_date_from ) ) {
-				$args['meta_query'][] = array(
-					'key'     => '_swifty_event_date',
-					'value'   => $filter_date_from,
-					'compare' => '>=',
-					'type'    => 'DATE',
-				);
-			}
-
-			// To Date
-			if ( ! empty( $filter_date_to ) ) {
-				$args['meta_query'][] = array(
-					'key'     => '_swifty_event_date',
-					'value'   => $filter_date_to,
-					'compare' => '<=',
-					'type'    => 'DATE',
-				);
-			}
-
-			// Order by date if any date filter is active, otherwise default (date desc)
-			if ( ! empty( $filter_date_from ) || ! empty( $filter_date_to ) ) {
-				$args['orderby'] = 'meta_value';
-				$args['meta_key'] = '_swifty_event_date';
-				$args['order'] = 'ASC';
-			}
-		}
-
-		$query = new \WP_Query( $args );
-
-		// START OUTPUT
-		$show_sidebar = ( ! empty( $settings['show_filter_sidebar'] ) && 'yes' === $settings['show_filter_sidebar'] );
-
-		if ( $show_sidebar ) {
-			echo '<div class="swifty-events-wrapper-with-sidebar swifty-sidebar-right">'; // Added class for Right Sidebar
-			
-			// --- MOBILE FILTER TRIGGER ---
-			echo '<div class="swifty-mobile-filter-trigger-wrapper">';
-			echo '<button class="swifty-mobile-filter-btn" onclick="document.querySelector(\'.swifty-events-wrapper-with-sidebar\').classList.add(\'swifty-filter-modal-active\');">';
-			echo '<i class="eicon-filter"></i> ' . __( 'Filter Events', 'swifty-events' );
-			echo '</button>';
-			echo '</div>';
-			
-			echo '<div class="swifty-events-main-content">';
-		}
-
-		// Pagination Setup
-		$paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+		// Query
+		$paged = max(1, get_query_var('paged') ? get_query_var('paged') : (get_query_var('page') ? get_query_var('page') : 1));
 		if ( isset( $_GET['swifty_page'] ) ) {
 			$paged = intval( $_GET['swifty_page'] );
 		}
-
-		$args = array(
-			'post_type'      => 'event',
-			'post_status'    => array( 'publish', 'future' ),
-			'posts_per_page' => $settings['posts_per_page'],
-			'paged'          => $paged,
-		);
 		
-		// 1. Initial Widget Settings Filter
-		if ( ! empty( $settings['category_filter'] ) ) {
-			$args['tax_query'] = array(
-				array(
+		$args = [
+			'post_type' => 'event',
+			'posts_per_page' => $settings['posts_per_page'] ?: 6,
+			'paged' => $paged,
+			'post_status' => 'publish',
+		];
+
+		// Settings Mapping (Adapter)
+		$layout_type = isset($settings['layout_mode']) ? $settings['layout_mode'] : 'grid';
+		$enable_animations = isset($settings['swifty_framer_animation']) ? $settings['swifty_framer_animation'] : 'yes';
+		$pagination_enable = isset($settings['swifty_pagination_enable']) ? $settings['swifty_pagination_enable'] : 'yes';
+		$pagination_style = isset($settings['swifty_pagination_style']) ? $settings['swifty_pagination_style'] : 'numbers';
+		$pagination_pos = isset($settings['swifty_pagination_position']) ? $settings['swifty_pagination_position'] : 'bottom';
+
+		// Handle Filtering from $_GET
+		if ( isset( $_GET['search'] ) && ! empty( $_GET['search'] ) ) {
+			$args['s'] = sanitize_text_field( $_GET['search'] );
+		}
+		
+		if ( isset( $_GET['category'] ) && ! empty( $_GET['category'] ) ) {
+			$args['tax_query'] = [
+				[
 					'taxonomy' => 'event_category',
-					'field'    => 'term_id',
-					'terms'    => $settings['category_filter'],
-				),
-			);
-		}
-
-		// 2. Override/Append with Sidebar Filter
-		// TAXONOMY FILTER
-		if ( ! empty( $filter_cat ) ) {
-			if ( empty( $args['tax_query'] ) ) {
-				$args['tax_query'] = array();
-			} else {
-				$args['tax_query']['relation'] = 'AND';
-			}
-
-			$args['tax_query'][] = array(
-				'taxonomy' => 'event_category',
-				'field'    => 'slug',
-				'terms'    => $filter_cat,
-			);
-		}
-
-		// SEARCH FILTER
-		if ( ! empty( $filter_search ) ) {
-			$args['s'] = $filter_search;
+					'field' => 'slug',
+					'terms' => sanitize_text_field( $_GET['category'] ),
+				]
+			];
 		}
 		
-		// DATE FILTER LOGIC
-		if ( empty( $args['meta_query'] ) ) {
-			$args['meta_query'] = array( 'relation' => 'AND' );
+		// Location Filter
+		if ( isset( $_GET['location'] ) && ! empty( $_GET['location'] ) ) {
+			$args['meta_query'][] = [
+				'key' => '_swifty_event_location',
+				'value' => sanitize_text_field( $_GET['location'] ),
+				'compare' => '=',
+			];
 		}
 		
-		// ... (Date filters handled by reuse of existing logic if possible, or just re-add)
-		// Re-implementing date filter logic here correctly since we replaced the block
-		
-		// From Date
-		if ( ! empty( $filter_date_from ) ) {
-			$args['meta_query'][] = array(
-				'key'     => '_swifty_event_date',
-				'value'   => $filter_date_from,
+		// Date Range
+		if ( isset( $_GET['date_from'] ) && ! empty( $_GET['date_from'] ) ) {
+			$args['meta_query'][] = [
+				'key' => '_swifty_event_date',
+				'value' => sanitize_text_field( $_GET['date_from'] ),
 				'compare' => '>=',
-				'type'    => 'DATE',
-			);
+				'type' => 'DATE',
+			];
 		}
-
-		// To Date
-		if ( ! empty( $filter_date_to ) ) {
-			$args['meta_query'][] = array(
-				'key'     => '_swifty_event_date',
-				'value'   => $filter_date_to,
+		
+		if ( isset( $_GET['date_to'] ) && ! empty( $_GET['date_to'] ) ) {
+			$args['meta_query'][] = [
+				'key' => '_swifty_event_date',
+				'value' => sanitize_text_field( $_GET['date_to'] ),
 				'compare' => '<=',
-				'type'    => 'DATE',
-			);
+				'type' => 'DATE',
+			];
 		}
-
-		// Order by date default
-		if ( empty( $args['orderby'] ) ) {
+		
+		// Upcoming Quick Action
+		if ( isset( $_GET['upcoming'] ) && 'true' === $_GET['upcoming'] ) {
+			$today = date('Y-m-d');
+			$args['meta_query'][] = [
+				'key' => '_swifty_event_date',
+				'value' => $today,
+				'compare' => '>=',
+				'type' => 'DATE'
+			];
 			$args['orderby'] = 'meta_value';
 			$args['meta_key'] = '_swifty_event_date';
 			$args['order'] = 'ASC';
 		}
 
-		$query = new \WP_Query( $args );
-		
-		// Framer Animation Wrapper Class
-		$wrapper_classes = 'swifty-event-list-wrapper';
-		if ( 'yes' === $settings['swifty_framer_animation'] ) {
-			$wrapper_classes .= ' swifty-framer-animation';
-		}
-		
-		echo '<div class="' . esc_attr( $wrapper_classes ) . '">';
-		
-		// --- PAGINATION TOP ---
-		if ( 'yes' === $settings['swifty_pagination_enable'] && in_array( $settings['swifty_pagination_position'], array( 'top', 'both' ) ) ) {
-			$this->render_pagination( $query, $settings, 'top' );
-		}
+		$events_query = new WP_Query($args);
 
-		if ( $query->have_posts() ) {
-			// Logic for Animation Stagger
-			$anim_class = '';
-			if ( 'fade-up' === $settings['animation'] ) {
-				$anim_class = 'swifty-anim-fade-up';
-			} elseif ( 'zoom-in' === $settings['animation'] ) {
-				$anim_class = 'swifty-anim-zoom-in';
-			}
+		// Get all categories for filter
+		$categories = get_terms([
+			'taxonomy' => 'event_category',
+			'hide_empty' => true,
+		]);
 
-			// Add layout attributes
-			$layout_class = 'swifty-layout-' . esc_attr( $settings['layout_mode'] );
-			if ( 'flex' === $settings['layout_mode'] ) {
-				$layout_class .= ' swifty-flex-' . esc_attr( $settings['flex_direction'] );
-			}
+		// Get all unique locations for filter
+		global $wpdb;
+		$locations = $wpdb->get_col("
+			SELECT DISTINCT meta_value 
+			FROM {$wpdb->postmeta} 
+			WHERE meta_key = '_swifty_event_location' 
+			AND meta_value != ''
+		");
 
-			echo '<div class="swifty-event-list ' . $layout_class . ' swifty-skin-' . esc_attr( $settings['skin'] ) . '">';
+		// Get all unique organizers for filter
+		$organizers = $wpdb->get_col("
+			SELECT DISTINCT meta_value 
+			FROM {$wpdb->postmeta} 
+			WHERE meta_key = '_swifty_event_organizer' 
+			AND meta_value != ''
+		");
+
+		// Start output
+		?>
+		<div class="swifty-event-list" data-widget-id="<?php echo esc_attr($this->get_id()); ?>">
 			
-			$delay = 0;
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$event_date = get_post_meta( get_the_ID(), '_swifty_event_date', true );
-				$excerpt = wp_trim_words( get_the_excerpt(), $settings['excerpt_length'], '...' );
-				
-				// Ensure item is visible if animation is none
-				$style = '';
-				if ( ! empty( $anim_class ) ) {
-					$style = 'style="animation-delay: ' . $delay . 's;"';
-				}
-
-				echo '<div class="swifty-event-item ' . esc_attr( $anim_class ) . '" ' . $style . '>';
-				
-				if ( 'glass' === $settings['skin'] ) {
-					// GLASS MINIMAL SKIN
-					if ( ! empty( $settings['show_date'] ) && 'yes' === $settings['show_date'] && $event_date ) {
-						echo '<div class="swifty-date-box">';
-						echo '<span class="swifty-day">' . date_i18n( 'd', strtotime( $event_date ) ) . '</span>';
-						echo '<span class="swifty-month">' . date_i18n( 'M', strtotime( $event_date ) ) . '</span>';
-						echo '</div>';
-					}
-					echo '<div class="swifty-content">';
-					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
-					echo '<div class="swifty-event-excerpt">' . $excerpt . '</div>';
-					echo '<a href="' . get_the_permalink() . '" class="swifty-read-more">' . __( 'Explore', 'swifty-events' ) . '</a>';
-					echo '</div>'; // End content
-
-				} elseif ( 'gradient_glass' === $settings['skin'] ) {
-					// GRADIENT GLASS SKIN (Replacing Neon)
-					echo '<div class="swifty-event-thumbnail">';
-					if ( has_post_thumbnail() ) {
-						the_post_thumbnail( 'medium_large' );
-					}
-					echo '</div>';
-					
-					echo '<div class="swifty-event-content">';
-					if ( ! empty( $settings['show_date'] ) && 'yes' === $settings['show_date'] && $event_date ) {
-						echo '<span class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</span>';
-					}
-					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
-					echo '<div class="swifty-event-excerpt">' . $excerpt . '</div>';
-					echo '<a href="' . get_the_permalink() . '" class="swifty-btn-details">' . __( 'Explore Event', 'swifty-events' ) . '</a>';
-					echo '</div>'; 
-
-				} else {
-					// GH2KENYA PREMIUM CARD (Default)
-					if ( has_post_thumbnail() ) {
-						echo '<div class="swifty-event-thumbnail">';
-						echo '<a href="' . get_the_permalink() . '">';
-						the_post_thumbnail( 'large' );
-						echo '</a>';
-						echo '</div>';
-					}
-					
-					echo '<div class="swifty-event-content">';
-					if ( ! empty( $settings['show_date'] ) && 'yes' === $settings['show_date'] && $event_date ) {
-						echo '<span class="swifty-event-date">' . date_i18n( get_option( 'date_format' ), strtotime( $event_date ) ) . '</span>';
-					}
-					echo '<h3 class="swifty-event-title"><a href="' . get_the_permalink() . '">' . get_the_title() . '</a></h3>';
-					echo '<div class="swifty-event-excerpt">' . $excerpt . '</div>';
-					
-					echo '<a href="' . get_the_permalink() . '" class="swifty-btn-details">' . __( 'View Event', 'swifty-events' ) . '</a>';
-					echo '</div>'; 
-				}
-				
-				echo '</div>';
-				$delay += 0.1; // Increment delay for stagger effect
-			}
-			echo '</div>';
-			wp_reset_postdata();
-		} else {
-			echo '<div class="swifty-no-events" style="padding: 20px; text-align: center; color: #555; border: 1px dashed #ccc;">' . __( 'No events found.', 'swifty-events' ) . '</div>';
-		}
-
-		// --- PAGINATION BOTTOM ---
-		if ( 'yes' === $settings['swifty_pagination_enable'] && in_array( $settings['swifty_pagination_position'], array( 'bottom', 'both' ) ) ) {
-			$this->render_pagination( $query, $settings, 'bottom' );
-		}
-
-		if ( $show_sidebar ) {
-			echo '</div>'; // End Main Content
+			<!-- Mobile Filter Trigger -->
+			<div class="swifty-mobile-filter-trigger-wrapper">
+				<button type="button" class="swifty-mobile-filter-btn">
+					<span><?php _e('Filter Events', 'swifty-events'); ?></span>
+					<i class="eicon-filter"></i>
+				</button>
+			</div>
 			
+			<!-- Backdrop for Mobile Modal -->
+			<div class="swifty-filter-backdrop"></div>
+
+			<!-- Wrapper with Sidebar -->
+			<div class="swifty-events-wrapper-with-sidebar">
+				
+				<!-- Sidebar Filter Area (Moved to top in HTML for Flex Order 1? No, user wants right. HTML Order: Sidebar 2nd) -->
+				<!-- However, strictly speaking, Mobile modal needs it accessible. -->
+				
+				<!-- Main Content Area -->
+				<div class="swifty-events-main-content">
+					
+					<!-- Events Grid/Flex Container -->
+					<div class="swifty-layout-<?php echo esc_attr($layout_type); ?> swifty-layout-<?php echo esc_attr($layout_type == 'grid' ? 'grid' : 'flex'); ?> swifty-flex-<?php echo esc_attr($layout_type == 'grid' ? 'row' : 'row'); ?> <?php echo esc_attr($enable_animations == 'yes' ? 'swifty-framer-animation' : ''); ?>">
+						
+						<?php if ($events_query->have_posts()) : ?>
+							<?php while ($events_query->have_posts()) : $events_query->the_post(); ?>
+								<?php 
+								$event_date = get_post_meta(get_the_ID(), '_swifty_event_date', true);
+								$event_location = get_post_meta(get_the_ID(), '_swifty_event_location', true);
+								$event_organizer = get_post_meta(get_the_ID(), '_swifty_event_organizer', true);
+								$enable_rsvp = get_post_meta(get_the_ID(), '_swifty_enable_rsvp', true);
+								?>
+								
+								<div class="swifty-event-item swifty-skin-<?php echo esc_attr($settings['skin']); ?> <?php echo esc_attr($enable_animations == 'yes' ? 'swifty-anim-fade-up' : ''); ?>">
+									
+									<?php if (has_post_thumbnail()) : ?>
+										<div class="swifty-event-thumbnail">
+											<?php the_post_thumbnail('large'); ?>
+										</div>
+									<?php endif; ?>
+									
+									<div class="swifty-event-content">
+										<?php if ($event_date) : ?>
+											<span class="swifty-event-date">
+												<?php echo date_i18n(get_option('date_format'), strtotime($event_date)); ?>
+											</span>
+										<?php endif; ?>
+										
+										<h3 class="swifty-event-title">
+											<a href="<?php the_permalink(); ?>">
+												<?php the_title(); ?>
+											</a>
+										</h3>
+										
+										<?php if ($event_location) : ?>
+											<p class="swifty-event-location">
+												<strong><?php _e('Location:', 'swifty-events'); ?></strong> 
+												<?php echo esc_html($event_location); ?>
+											</p>
+										<?php endif; ?>
+										
+										<?php if ($event_organizer) : ?>
+											<p class="swifty-event-organizer">
+												<strong><?php _e('Organizer:', 'swifty-events'); ?></strong> 
+												<?php echo esc_html($event_organizer); ?>
+											</p>
+										<?php endif; ?>
+										
+										<a href="<?php the_permalink(); ?>" class="swifty-btn-details">
+											<?php _e('View Details', 'swifty-events'); ?>
+										</a>
+										
+										<?php if ($enable_rsvp == 'yes') : ?>
+											<button class="swifty-btn-rsvp" data-event-id="<?php echo get_the_ID(); ?>">
+												<?php _e('Join Event', 'swifty-events'); ?>
+											</button>
+										<?php endif; ?>
+									</div>
+								</div>
+								
+							<?php endwhile; ?>
+						<?php else : ?>
+							<p class="swifty-no-events"><?php _e('No events found.', 'swifty-events'); ?></p>
+						<?php endif; ?>
+						
+					</div>
+					
+					<!-- Pagination -->
+					<?php if ($pagination_enable == 'yes' && $events_query->max_num_pages > 1) : ?>
+						<div class="swifty-pagination swifty-pagination-<?php echo esc_attr($pagination_style); ?>">
+							<?php
+							echo paginate_links([
+								'base' => add_query_arg( 'swifty_page', '%#%' ),
+								'format' => '?swifty_page=%#%',
+								'current' => max(1, $paged),
+								'total' => $events_query->max_num_pages,
+								'prev_text' => '&laquo;',
+								'next_text' => '&raquo;',
+								'type' => 'list',
+								'add_args' => false,
+							]);
+							?>
+						</div>
+					<?php endif; ?>
+					
+				</div>
+				
+
+				<?php
 			// --- SIDEBAR RENDER (Right Side) ---
 			echo '<aside class="swifty-events-filter-sidebar">';
 			
 			// Modal Close Button (Mobile Only)
-			echo '<button class="swifty-modal-close" onclick="document.querySelector(\'.swifty-events-wrapper-with-sidebar\').classList.remove(\'swifty-filter-modal-active\');">&times;</button>';
+			echo '<button class="swifty-modal-close" type="button">&times;</button>';
 
 			// Start Filter Form
 			echo '<form class="swifty-filter-main-form" method="GET">';
@@ -596,90 +498,141 @@ class Swifty_Events_Event_List_Widget extends \Elementor\Widget_Base {
 			// 1. Search Bar (Top)
 			echo '<div class="swifty-filter-group swifty-search-group">';
 			echo '<div class="swifty-search-wrapper">';
-			echo '<input type="text" name="swifty_search" class="swifty-search-input" placeholder="' . __( 'Search events...', 'swifty-events' ) . '" value="' . esc_attr( $filter_search ) . '">';
+			echo '<input type="text" name="search" class="swifty-search-input" placeholder="' . __( 'Search events...', 'swifty-events' ) . '" value="' . esc_attr( isset($_GET['search']) ? $_GET['search'] : '' ) . '">';
 			echo '<button type="submit" class="swifty-search-icon-btn"><i class="eicon-search"></i></button>';
 			echo '</div>';
 			echo '</div>';
 
-			// 2. Upcoming Quick Button
-			echo '<div class="swifty-quick-actions" style="margin-bottom: 28px;">';
-			echo '<button type="submit" name="swifty_action" value="upcoming" class="swifty-btn swifty-btn-upcoming ' . ( 'upcoming' === $filter_action ? 'active' : '' ) . '">' . __( 'Upcoming Events', 'swifty-events' ) . '</button>';
+			// 2. Upcoming Quick Button (Colored)
+			echo '<div class="swifty-filter-group swifty-quick-actions">';
+			$is_upcoming = ( isset($_GET['upcoming']) && $_GET['upcoming'] == 'true' );
+			echo '<button type="button" class="swifty-btn swifty-btn-upcoming ' . ( $is_upcoming ? 'active' : '' ) . '">';
+			echo '<i class="eicon-calendar"></i> ' . __( 'Show Upcoming Events', 'swifty-events' );
+			echo '</button>';
+			// Hidden input to handle the state submission if form is submitted normally
+			echo '<input type="hidden" name="upcoming" class="swifty-upcoming-input" value="' . ( $is_upcoming ? 'true' : '' ) . '">';
 			echo '</div>';
 
 			// 3. Categories Dropdown
 			echo '<div class="swifty-filter-group">';
 			echo '<label class="swifty-filter-label">' . __( 'Category', 'swifty-events' ) . '</label>';
 			
-			$cat_args = array( 'taxonomy' => 'event_category', 'hide_empty' => true );
-			if ( ! empty( $settings['category_filter'] ) ) { $cat_args['include'] = $settings['category_filter']; }
-			$categories = get_terms( $cat_args );
-			
 			echo '<div class="swifty-select-wrapper">';
-			echo '<select name="swifty_cat" class="swifty-form-select">';
+			echo '<select name="category" class="swifty-form-select">';
 			echo '<option value="">' . __( 'All Categories', 'swifty-events' ) . '</option>';
 			if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) {
 				foreach ( $categories as $cat ) {
-					echo '<option value="' . esc_attr( $cat->slug ) . '" ' . selected( $filter_cat, $cat->slug, false ) . '>' . esc_html( $cat->name ) . '</option>';
+					$selected = ( isset($_GET['category']) && $_GET['category'] == $cat->slug ) ? 'selected' : '';
+					echo '<option value="' . esc_attr( $cat->slug ) . '" ' . $selected . '>' . esc_html( $cat->name ) . '</option>';
 				}
 			}
 			echo '</select>';
 			echo '</div>';
 			echo '</div>';
 
-			// 4. Date Picker Range
+			// 4. Date Picker Range (Aligned Row)
 			echo '<div class="swifty-filter-group">';
-			echo '<label class="swifty-filter-label">' . __( 'Date From', 'swifty-events' ) . '</label>';
-			echo '<input type="date" name="swifty_date_from" class="swifty-form-date" min="2020-01-01" value="' . esc_attr( $filter_date_from ) . '" style="margin-bottom: 10px;">';
-			echo '<label class="swifty-filter-label">' . __( 'Date To', 'swifty-events' ) . '</label>';
-			echo '<input type="date" name="swifty_date_to" class="swifty-form-date" min="2020-01-01" value="' . esc_attr( $filter_date_to ) . '">';
+			echo '<label class="swifty-filter-label">' . __( 'Date Range', 'swifty-events' ) . '</label>';
+			echo '<div class="swifty-date-range-row">'; // New Flex Row Wrapper
+			echo '<input type="date" name="date_from" class="swifty-form-date" placeholder="' . __( 'From', 'swifty-events' ) . '" value="' . esc_attr( isset($_GET['date_from']) ? $_GET['date_from'] : '' ) . '">';
+			echo '<input type="date" name="date_to" class="swifty-form-date" placeholder="' . __( 'To', 'swifty-events' ) . '" value="' . esc_attr( isset($_GET['date_to']) ? $_GET['date_to'] : '' ) . '">';
+			echo '</div>';
 			echo '</div>';
 
-			// 5. Action Buttons
+			// 5. Location Filter
+			if ( ! empty( $locations ) ) {
+				echo '<div class="swifty-filter-group">';
+				echo '<label class="swifty-filter-label">' . __( 'Location', 'swifty-events' ) . '</label>';
+				echo '<div class="swifty-select-wrapper">';
+				echo '<select name="location" class="swifty-form-select">';
+				echo '<option value="">' . __( 'All Locations', 'swifty-events' ) . '</option>';
+				foreach ( $locations as $loc ) {
+					$selected = ( isset($_GET['location']) && $_GET['location'] == $loc ) ? 'selected' : '';
+					echo '<option value="' . esc_attr( $loc ) . '" ' . $selected . '>' . esc_html( $loc ) . '</option>';
+				}
+				echo '</select>';
+				echo '</div>';
+				echo '</div>';
+			}
+
+			// 6. Action Buttons
 			echo '<div class="swifty-filter-actions">';
-			echo '<button type="submit" class="swifty-btn swifty-btn-apply">' . __( 'Apply Filter', 'swifty-events' ) . '</button>';
+			echo '<button type="submit" class="swifty-btn swifty-btn-apply">' . __( 'Apply Filters', 'swifty-events' ) . '</button>';
 			
 			// Clear Button
-			$reset_url = remove_query_arg( array( 'swifty_cat', 'swifty_search', 'swifty_date_from', 'swifty_date_to', 'swifty_action', 'swifty_page' ) ); // Added swifty_page removal
-			echo '<a href="' . esc_url( $reset_url ) . '" class="swifty-btn swifty-btn-clear">' . __( 'Clear Filter', 'swifty-events' ) . '</a>';
+			echo '<button type="button" class="swifty-btn swifty-btn-clear">' . __( 'Clear Filters', 'swifty-events' ) . '</button>';
 			echo '</div>';
 			
 			echo '</form>'; // End Form
 			echo '</aside>'; // End Sidebar
 
 			echo '</div>'; // End Wrapper
-		}
+		?>
+		</div>
+		<?php
+		
+		wp_reset_postdata();
+		
+		// Enqueue JavaScript
+		$this->render_frontend_scripts();
 	}
 	
-	protected function render_pagination( $query, $settings, $context ) {
-		$total_pages = $query->max_num_pages;
-		if ( $total_pages < 2 ) { return; }
-		
-		$current_page = max( 1, get_query_var( 'paged' ), isset( $_GET['swifty_page'] ) ? intval( $_GET['swifty_page'] ) : 1 );
-		
-		$style_class = 'swifty-pagination-' . $settings['swifty_pagination_style'];
-		$pos_class = 'swifty-pagination-' . $context;
-		
-		echo '<div class="swifty-pagination ' . esc_attr( $style_class ) . ' ' . esc_attr( $pos_class ) . '">';
-		
-		$big = 999999999; // need an unlikely integer
-		$args = array(
-			'base' => add_query_arg( 'swifty_page', '%#%' ),
-			'format' => '?swifty_page=%#%',
-			'current' => $current_page,
-			'total' => $total_pages,
-			'prev_text' => '<i class="eicon-chevron-left"></i>',
-			'next_text' => '<i class="eicon-chevron-right"></i>',
-			'type' => 'list',
-		);
-		
-		if ( 'prevnext' === $settings['swifty_pagination_style'] ) {
-			$args['mid_size'] = 0;
-			$args['end_size'] = 0;
-			$args['prev_next'] = true;
-		}
-		
-		echo paginate_links( $args );
-		
-		echo '</div>';
+	private function render_frontend_scripts() {
+		?>
+		<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const widgetWrapper = document.querySelector('[data-widget-id="<?php echo esc_js($this->get_id()); ?>"]');
+			if (!widgetWrapper) return;
+			
+			const mainWrapper = widgetWrapper.querySelector('.swifty-events-wrapper-with-sidebar');
+			const sidebar = widgetWrapper.querySelector('.swifty-events-filter-sidebar');
+			const mobileBtn = widgetWrapper.querySelector('.swifty-mobile-filter-btn');
+			const closeBtn = widgetWrapper.querySelector('.swifty-modal-close');
+			const backdrop = widgetWrapper.querySelector('.swifty-filter-backdrop'); // Assuming this exists outside wrapper in PHP, check placement
+			
+			// Modal Logic
+			function openModal() {
+				if(mainWrapper) mainWrapper.classList.add('swifty-filter-modal-active');
+				document.body.style.overflow = 'hidden';
+			}
+			
+			function closeModal() {
+				if(mainWrapper) mainWrapper.classList.remove('swifty-filter-modal-active');
+				document.body.style.overflow = '';
+			}
+			
+			if (mobileBtn) mobileBtn.addEventListener('click', openModal);
+			if (closeBtn) closeBtn.addEventListener('click', closeModal);
+			if (backdrop) backdrop.addEventListener('click', closeModal);
+			
+			// Clear Filters
+			const clearBtn = widgetWrapper.querySelector('.swifty-btn-clear');
+			if (clearBtn) {
+				clearBtn.addEventListener('click', function() {
+					// Reload page without query params
+					window.location.href = window.location.href.split('?')[0];
+				});
+			}
+
+			// Upcoming Toggle logic
+			const upcomingBtn = widgetWrapper.querySelector('.swifty-btn-upcoming');
+			const upcomingInput = widgetWrapper.querySelector('.swifty-upcoming-input');
+			if (upcomingBtn && upcomingInput) {
+				upcomingBtn.addEventListener('click', function() {
+					if (upcomingInput.value === 'true') {
+						upcomingInput.value = '';
+						this.classList.remove('active');
+					} else {
+						upcomingInput.value = 'true';
+						this.classList.add('active');
+					}
+					// Auto submit? Or wait for Apply? User flow suggests waiting for Apply usually, but toggle buttons often auto-trigger. 
+					// Let's stick to manual apply for consistency with other filters, or users get confused if page reloads immediately.
+					// User logic seemed to want it to be a button.
+				});
+			}
+		});
+		</script>
+		<?php
 	}
 }
