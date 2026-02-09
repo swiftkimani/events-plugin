@@ -29,3 +29,17 @@ function blog_widget_enqueue_assets()
     wp_enqueue_script('blog-widget-scripts', plugin_dir_url(__FILE__) . 'assets/js/blog-widget.js', array('jquery'), null, true);
 }
 add_action('wp_enqueue_scripts', 'blog_widget_enqueue_assets');
+
+// Template Include Filter for Single Posts
+function blog_widget_single_template($template)
+{
+    if (is_singular('post')) {
+        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-post.php';
+        if (file_exists($plugin_template)) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'blog_widget_single_template');
+
