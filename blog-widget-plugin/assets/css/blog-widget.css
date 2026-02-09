@@ -150,6 +150,33 @@
     border: 1px solid rgba(0,0,0,0.05);
 }
 
+/* Category Badge (Top Left) */
+.swifty-event-category-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 6px 14px;
+    background: rgba(14, 27, 45, 0.6); /* Dark semi-transparent */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 5;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    pointer-events: none; /* Let clicks pass through to link if needed, though it's nice to have it selectable */
+}
+
+.swifty-skin-gh2kenya .swifty-event-item:hover .swifty-event-category-badge {
+    background: rgba(14, 27, 45, 0.8);
+    transform: translateY(-2px);
+}
+
 /* Title */
 .swifty-event-title {
     margin: 4px 0 0 0;
@@ -201,7 +228,7 @@
     border-radius: 12px;
     font-weight: 700;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.3s ease, background-color 0.3s ease;
     box-shadow: 0 4px 15px rgba(14, 27, 45, 0.15);
     position: relative;
     overflow: hidden;
@@ -275,7 +302,7 @@
     font-family: var(--font-body);
     font-size: 0.95rem;
     background: #f8fafc;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .swifty-search-input:focus {
@@ -362,7 +389,7 @@
     padding: 12px;
     border-radius: 8px;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
     cursor: pointer;
 }
 
@@ -413,7 +440,7 @@
     color: var(--color-deep-blue);
     text-decoration: none;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
 .swifty-pagination .page-numbers.current,
@@ -423,4 +450,101 @@
     border-color: var(--color-deep-blue);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(14, 27, 45, 0.2);
+}
+
+/* --- Mobile Filter Modal & Responsive Styles --- */
+
+/* Default: Hide Mobile Toggle on Desktop */
+.swifty-mobile-filter-toggle {
+    display: none;
+}
+
+.swifty-sidebar-header-mobile {
+    display: none;
+}
+
+.swifty-filter-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(14, 27, 45, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 991px) {
+    /* Main Layout - Column */
+    .swifty-events-wrapper-with-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    /* Show Toggle Button */
+    .swifty-mobile-filter-toggle {
+        display: block;
+    }
+
+    /* Sidebar as Modal */
+    .swifty-events-filter-sidebar {
+        position: fixed;
+        top: 0;
+        right: -100%; /* Hidden off-screen */
+        width: 300px;
+        height: 100vh;
+        background: #fff;
+        z-index: 1000;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+        transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        overflow-y: auto;
+        border-radius: 20px 0 0 20px;
+        padding: 0;
+    }
+
+    /* Active State */
+    .swifty-events-filter-sidebar.active {
+        right: 0;
+    }
+
+    /* Overlay Active */
+    .swifty-filter-overlay.active {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Modal Content */
+    .swifty-sidebar-inner {
+        padding: 24px;
+        padding-top: 0;
+    }
+    
+    .swifty-sidebar-header-mobile {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 1px solid #eee;
+        margin: 0 -24px 24px -24px;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 10;
+    }
+
+    .swifty-sidebar-header-mobile h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: var(--color-deep-blue);
+    }
+
+    .swifty-btn-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        line-height: 1;
+        color: #8898aa;
+        cursor: pointer;
+    }
 }

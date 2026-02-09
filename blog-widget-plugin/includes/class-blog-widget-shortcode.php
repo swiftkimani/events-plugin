@@ -69,6 +69,12 @@
                                             <a href="<?php the_permalink(); ?>">
                                                 <?php the_post_thumbnail('large'); ?>
                                             </a>
+                                            <?php
+                                            $categories = get_the_category();
+                                            if ( ! empty( $categories ) ) {
+                                                echo '<span class="swifty-event-category-badge">' . esc_html( $categories[0]->name ) . '</span>';
+                                            }
+                                            ?>
                                         </div>
                                     <?php endif; ?>
                                     
@@ -116,9 +122,20 @@
                     <?php wp_reset_postdata(); ?>
                 </div>
 
+                <!-- Mobile Filter Toggle -->
+                <div class="swifty-mobile-filter-toggle">
+                    <button id="swifty-blog-filter-toggle" class="swifty-btn-details" style="width: 100%; justify-content: center; margin-bottom: 20px;">
+                        <i class="eicon-filter"></i> <?php _e('Filter Posts', 'swifty-events'); ?>
+                    </button>
+                </div>
+
                 <!-- Sidebar Filters -->
-                <aside class="swifty-events-filter-sidebar">
+                <aside class="swifty-events-filter-sidebar" id="swifty-blog-sidebar">
                     <div class="swifty-sidebar-inner">
+                        <div class="swifty-sidebar-header-mobile">
+                            <h3><?php _e('Filters', 'swifty-events'); ?></h3>
+                            <button id="swifty-blog-filter-close" class="swifty-btn-close">&times;</button>
+                        </div>
                         <form method="get" class="swifty-filter-form">
                             
                             <!-- 1. Search Bar -->
@@ -180,6 +197,8 @@
                 </aside>
                 
             </div>
+            <!-- Overlay for mobile modal -->
+            <div id="swifty-blog-filter-overlay" class="swifty-filter-overlay"></div>
         </div>
 <?php
         return ob_get_clean();
