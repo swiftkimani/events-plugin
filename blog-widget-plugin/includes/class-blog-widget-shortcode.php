@@ -55,6 +55,13 @@
         <div class="swifty-blog-widget-container" data-widget-id="blog-widget">
             <div class="swifty-events-wrapper-with-sidebar">
                 
+                <!-- Mobile Filter Toggle (Moved to Top) -->
+                <div class="swifty-mobile-filter-toggle">
+                    <button type="button" id="swifty-blog-filter-toggle" class="swifty-btn-details" style="width: 100%; justify-content: center; margin-bottom: 20px;">
+                        <i class="eicon-filter"></i> <?php _e('Filter Posts', 'swifty-events'); ?>
+                    </button>
+                </div>
+
                 <!-- Main Content Area -->
                 <div class="swifty-events-main-content">
                     
@@ -122,19 +129,12 @@
                     <?php wp_reset_postdata(); ?>
                 </div>
 
-                <!-- Mobile Filter Toggle -->
-                <div class="swifty-mobile-filter-toggle">
-                    <button id="swifty-blog-filter-toggle" class="swifty-btn-details" style="width: 100%; justify-content: center; margin-bottom: 20px;">
-                        <i class="eicon-filter"></i> <?php _e('Filter Posts', 'swifty-events'); ?>
-                    </button>
-                </div>
-
                 <!-- Sidebar Filters -->
                 <aside class="swifty-events-filter-sidebar" id="swifty-blog-sidebar">
                     <div class="swifty-sidebar-inner">
                         <div class="swifty-sidebar-header-mobile">
                             <h3><?php _e('Filters', 'swifty-events'); ?></h3>
-                            <button id="swifty-blog-filter-close" class="swifty-btn-close">&times;</button>
+                            <button type="button" id="swifty-blog-filter-close" class="swifty-btn-close">&times;</button>
                         </div>
                         <form method="get" class="swifty-filter-form">
                             
