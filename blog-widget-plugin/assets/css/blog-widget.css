@@ -1,0 +1,43 @@
+/* Blog Widget Styles */
+.blog-widget-container {
+    display: flex;
+    gap: 20px;
+}
+
+.blog-widget-filters {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.blog-widget-posts {
+    flex: 3;
+}
+
+.blog-post {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.pagination {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.pagination a {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    background: #0073aa;
+    color: #fff;
+}
