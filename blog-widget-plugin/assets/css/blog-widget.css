@@ -1,10 +1,10 @@
-/* Blog Widget Styles */
-.blog-widget-container {
+/* Updated Blog Widget Styles to match Wigh-Event List */
+.swifty-blog-list {
     display: flex;
     gap: 20px;
 }
 
-.blog-widget-filters {
+.swifty-blog-filters {
     flex: 1;
     background: #f9f9f9;
     padding: 15px;
@@ -12,16 +12,26 @@
     border-radius: 5px;
 }
 
-.blog-widget-posts {
+.swifty-events-main-content {
     flex: 3;
 }
 
-.blog-post {
+.swifty-event-item {
     margin-bottom: 20px;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    background: #fff;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    color: #fff;
+}
+
+.swifty-event-item h2 a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.swifty-event-item h2 a:hover {
+    text-decoration: underline;
 }
 
 .pagination {
