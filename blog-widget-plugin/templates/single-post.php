@@ -79,6 +79,13 @@ while ( have_posts() ) :
                                 <?php the_tags( '<span style="font-weight:bold; color: #0E1B2D;">Tags: </span> ', ', ', '' ); ?>
                             </div>
                         <?php endif; ?>
+
+                        <!-- Bottom Back Button -->
+                        <div class="swifty-bottom-back-wrapper" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <a href="#" onclick="history.back(); return false;" class="swifty-btn-details" style="display: inline-flex; width: auto; background: #0E1B2D; color: #fff;">
+                                &larr; <?php _e( 'Back to News', 'swifty-events' ); ?>
+                            </a>
+                        </div>
                         
                         <!-- Comments (Optional) -->
                         <?php

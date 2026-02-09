@@ -172,7 +172,7 @@
 
 .swifty-event-title a:hover {
     background-size: 100% 2px;
-    color: var(--color-deep-blue); /* Title color stays dark on hover with underline effect */
+    color: var(--color-deep-blue); 
 }
 
 /* Excerpt */
@@ -251,7 +251,7 @@
 
 /* Filter Group Styles */
 .swifty-filter-group {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 .swifty-filter-label {
@@ -265,37 +265,11 @@
     letter-spacing: 1px;
 }
 
-/* Category List in Sidebar */
-.swifty-category-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.swifty-category-list li {
-    margin-bottom: 8px;
-}
-
-.swifty-category-list a {
-    text-decoration: none;
-    color: #555;
-    font-weight: 500;
-    display: block;
-    padding: 8px 12px;
-    background: #f8fafc;
-    border-radius: 8px;
-    transition: 0.2s;
-}
-
-.swifty-category-list a:hover {
-    background: #eff2f5;
-    color: var(--color-deep-blue);
-}
-
-/* Search Params specific */
+/* Search Input */
 .swifty-search-input {
     width: 100%;
     padding: 12px 16px;
+    padding-right: 40px; /* Space for icon */
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-family: var(--font-body);
@@ -310,6 +284,114 @@
     border-color: var(--color-primary-start);
     box-shadow: 0 0 0 4px rgba(114, 190, 68, 0.1);
 }
+
+/* Icon Button */
+.swifty-search-icon-btn {
+    color: #8898aa;
+    transition: color 0.3s;
+}
+
+.swifty-search-icon-btn:hover {
+    color: var(--color-deep-blue);
+}
+
+/* New Filter Elements Styles */
+
+/* Recent News Button */
+.swifty-btn-recent-news {
+    background: #fff;
+    border: 2px dashed #e2e8f0;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.swifty-btn-recent-news:hover {
+    border-color: var(--color-deep-blue);
+    color: var(--color-deep-blue);
+    background: #f8fafc;
+}
+
+/* Select Dropdown */
+.swifty-filter-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.762L10.825 4z'/%3E%3C/svg%3E") no-repeat right 16px center;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    color: #333;
+}
+
+.swifty-filter-select:focus {
+    outline: none;
+    background-color: #fff;
+    border-color: var(--color-primary-start);
+}
+
+/* Date Inputs */
+.swifty-date-input {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    background: #f8fafc;
+    color: #555;
+}
+
+.swifty-date-input:focus {
+    outline: none;
+    border-color: var(--color-primary-start);
+    background: #fff;
+}
+
+/* Buttons Block */
+.swifty-btn-block {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.swifty-btn-apply {
+    background: var(--color-deep-blue);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.swifty-btn-apply:hover {
+    background: var(--color-primary-start);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.swifty-btn-clear {
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.swifty-btn-clear:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
 
 /* Pagination */
 .swifty-pagination {

@@ -12,26 +12,47 @@
         $paged = get_query_var('paged') ? get_query_var('paged') : 1;
         $args = array(
             'post_type' => 'post',
-            'posts_per_page' => 6, // Match grid layout better
+            'posts_per_page' => 6,
             'paged' => $paged,
         );
 
+        // Search
+        if (isset($_GET['s']) && !empty($_GET['s'])) {
+            $args['s'] = sanitize_text_field($_GET['s']);
+        }
+
+        // Category
         if (isset($_GET['category']) && $_GET['category'] != 0) {
             $args['cat'] = intval($_GET['category']);
         }
 
-        if (isset($_GET['date']) && !empty($_GET['date'])) {
-            $args['date_query'] = array(
-                array(
-                    'year' => date('Y', strtotime($_GET['date'])),
-                    'month' => date('m', strtotime($_GET['date'])),
-                ),
-            );
+        // Date Range
+        if ( ( isset($_GET['start_date']) && !empty($_GET['start_date']) ) || ( isset($_GET['end_date']) && !empty($_GET['end_date']) ) ) {
+            $date_query = array( 'relation' => 'AND' );
+            
+            if ( isset($_GET['start_date']) && !empty($_GET['start_date']) ) {
+                $date_query[] = array(
+                    'after'     => sanitize_text_field($_GET['start_date']),
+                    'inclusive' => true,
+                );
+            }
+            
+            if ( isset($_GET['end_date']) && !empty($_GET['end_date']) ) {
+                $date_query[] = array(
+                    'before'    => sanitize_text_field($_GET['end_date']),
+                    'inclusive' => true,
+                );
+            }
+            
+            $args['date_query'] = $date_query;
         }
 
         $query = new WP_Query($args);
+        
+        // Base URL for resetting
+        $base_url = strtok($_SERVER["REQUEST_URI"], '?');
 ?>
-        <div class="swifty-event-list swifty-blog-list" data-widget-id="blog-widget">
+        <div class="swifty-blog-widget-container" data-widget-id="blog-widget">
             <div class="swifty-events-wrapper-with-sidebar">
                 
                 <!-- Main Content Area -->
@@ -89,7 +110,7 @@
                         </div>
                         
                     <?php else : ?>
-                        <p class="swifty-no-events"><?php _e('No posts found.', 'swifty-events'); ?></p>
+                        <p class="swifty-no-events"><?php _e('No posts found matching your criteria.', 'swifty-events'); ?></p>
                     <?php endif; ?>
                     
                     <?php wp_reset_postdata(); ?>
@@ -98,34 +119,62 @@
                 <!-- Sidebar Filters -->
                 <aside class="swifty-events-filter-sidebar">
                     <div class="swifty-sidebar-inner">
-                        <form method="get" class="swifty-filter-group">
-                            <label class="swifty-filter-label" for="category"><?php _e('Categories', 'swifty-events'); ?></label>
+                        <form method="get" class="swifty-filter-form">
                             
-                             <ul class="swifty-category-list">
-                                <?php
-                                $categories = get_categories(array('hide_empty' => true));
-                                $current_cat = isset($_GET['category']) ? intval($_GET['category']) : 0;
-                                echo '<li><a href="?category=0"' . ($current_cat === 0 ? ' style="background:#eff2f5;"' : '') . '>All Categories</a></li>';
-                                
-                                foreach ($categories as $category) {
-                                    $active_style = ($current_cat === $category->term_id) ? ' style="background:#eff2f5; color:var(--color-deep-blue);"' : '';
-                                    echo '<li><a href="?category=' . $category->term_id . '"' . $active_style . '>' . $category->name . ' <span style="float: right; color: #aaa; font-size: 0.8em;">(' . $category->count . ')</span></a></li>';
-                                }
-                                ?>
-                            </ul>
-
-                            <div style="margin-top: 24px;">
-                                <label class="swifty-filter-label" for="date"><?php _e('Filter by Date', 'swifty-events'); ?></label>
-                                <input type="month" name="date" id="date" class="swifty-search-input" value="<?php echo isset($_GET['date']) ? esc_attr($_GET['date']) : ''; ?>" onchange="this.form.submit()">
-                            </div>
-                            
-                            <?php if(isset($_GET['category']) || isset($_GET['date'])): ?>
-                                <div style="margin-top: 20px;">
-                                    <a href="<?php echo remove_query_arg(array('category', 'date')); ?>" class="swifty-btn-details" style="width:100%; justify-content:center; background:#8898aa;">
-                                        Clear Filters
-                                    </a>
+                            <!-- 1. Search Bar -->
+                            <div class="swifty-filter-group swifty-search-group">
+                                <label class="swifty-filter-label"><?php _e('Search', 'swifty-events'); ?></label>
+                                <div class="swifty-search-wrapper" style="position:relative;">
+                                    <input type="text" name="s" class="swifty-search-input" placeholder="<?php _e('Search posts...', 'swifty-events'); ?>" value="<?php echo get_search_query(); ?>">
+                                    <button type="submit" class="swifty-search-icon-btn" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer;"><i class="eicon-search"></i></button>
                                 </div>
-                            <?php endif; ?>
+                            </div>
+
+                            <!-- 2. Recent News Button (Reset) -->
+                            <div class="swifty-filter-group">
+                                <a href="<?php echo esc_url($base_url); ?>" class="swifty-btn-recent-news swifty-btn-block">
+                                    <?php _e('Recent News', 'swifty-events'); ?>
+                                </a>
+                            </div>
+
+                            <!-- 3. Categories Dropdown -->
+                            <div class="swifty-filter-group">
+                                <label class="swifty-filter-label" for="category"><?php _e('Filter by Category', 'swifty-events'); ?></label>
+                                <?php
+                                $args = array(
+                                    'show_option_all' => 'All Categories',
+                                    'name'            => 'category',
+                                    'class'           => 'swifty-filter-select',
+                                    'selected'        => isset($_GET['category']) ? $_GET['category'] : 0,
+                                    'hide_empty'      => 1,
+                                    'value_field'     => 'term_id',
+                                );
+                                wp_dropdown_categories($args);
+                                ?>
+                            </div>
+
+                            <!-- 4. Date Range Selector -->
+                            <div class="swifty-filter-group">
+                                <label class="swifty-filter-label"><?php _e('Filter by Date', 'swifty-events'); ?></label>
+                                <div class="swifty-date-range-group" style="display:flex; flex-direction:column; gap:10px;">
+                                    <input type="date" name="start_date" class="swifty-date-input" placeholder="Start Date" value="<?php echo isset($_GET['start_date']) ? esc_attr($_GET['start_date']) : ''; ?>">
+                                    <input type="date" name="end_date" class="swifty-date-input" placeholder="End Date" value="<?php echo isset($_GET['end_date']) ? esc_attr($_GET['end_date']) : ''; ?>">
+                                </div>
+                            </div>
+
+                            <!-- 5. Actions -->
+                            <div class="swifty-filter-actions" style="margin-top: 20px; display:flex; flex-direction:column; gap:10px;">
+                                <button type="submit" class="swifty-btn-apply swifty-btn-block">
+                                    <?php _e('Apply Filter', 'swifty-events'); ?>
+                                </button>
+                                
+                                <?php if(isset($_GET['s']) || isset($_GET['category']) || isset($_GET['start_date']) || isset($_GET['end_date'])): ?>
+                                    <a href="<?php echo esc_url($base_url); ?>" class="swifty-btn-clear swifty-btn-block">
+                                        <?php _e('Clear Filters', 'swifty-events'); ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+
                         </form>
                     </div>
                 </aside>
