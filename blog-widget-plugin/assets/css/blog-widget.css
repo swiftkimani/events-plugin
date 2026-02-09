@@ -557,4 +557,30 @@
         color: #8898aa;
         cursor: pointer;
     }
+
+    /* Single Page Mobile Adjustments */
+    .swifty-main-padding {
+        padding-bottom: 30px !important;
+        padding-top: 20px !important;
+    }
+
+    .swifty-single-title {
+        font-size: 1.7rem !important; /* Reduce title size on mobile */
+    }
+
+    .swifty-single-content {
+        font-size: 0.95rem !important; /* Slightly smaller body text */
+        line-height: 1.6 !important;
+    }
+    
+    /* Ensure card padding is smaller on mobile */
+    .swifty-single-card-content {
+        padding: 20px !important;
+    }
+}
+
+/* Desktop default padding */
+.swifty-main-padding {
+    padding-bottom: 60px;
+    padding-top: 40px;
 }

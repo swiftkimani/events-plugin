@@ -24,7 +24,7 @@ while ( have_posts() ) :
 		.swifty-single-event-container { background-color: #f2f2f2; }
 	</style>
 
-	<div class="swifty-single-event-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+	<div class="swifty-single-event-container swifty-main-padding" style="max-width: 1200px; margin: 0 auto; padding-left: 20px; padding-right: 20px;">
 		
 		<!-- Back Button Top -->
 		<div class="swifty-back-wrapper" style="margin-bottom: 20px;">
@@ -50,7 +50,7 @@ while ( have_posts() ) :
 					<div class="swifty-single-main-info">
 						
 						<!-- Title -->
-						<h1 class="swifty-single-title" style="font-size: 2.5rem; color: #0E1B2D; margin-bottom: 10px; line-height: 1.1; font-family: 'Geologica', sans-serif;"><?php the_title(); ?></h1>
+						<h1 class="swifty-single-title" style="font-size: 2.5rem; color: #0E1B2D; margin-bottom: 15px; line-height: 1.1; font-family: 'Geologica', sans-serif;"><?php the_title(); ?></h1>
 		
 						<!-- Minimal Meta Row -->
 						<div class="swifty-single-meta-row" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; font-size: 0.95rem; color: #8898aa; align-items: center;">
@@ -103,13 +103,6 @@ while ( have_posts() ) :
                                 &larr; <?php _e( 'Back to News', 'swifty-events' ); ?>
                             </a>
                         </div>
-                        
-                        <!-- Comments (Optional) -->
-                        <?php
-                        if ( comments_open() || get_comments_number() ) :
-                            comments_template();
-                        endif;
-                        ?>
 
 					</div>
 
